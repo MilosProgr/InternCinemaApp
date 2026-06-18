@@ -3,9 +3,11 @@ using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
 using CinemaApp.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using CinemaApp.Application.Services.MovieScreenings;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CinemaApp.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MovieScreeningController : ControllerBase

@@ -1,4 +1,5 @@
 ﻿//using CinemaApp.Domain.Entities;
+using CinemaApp.Application.DTO.AuthDTO.PasswordManagement;
 using CinemaApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,9 @@ namespace CinemaApp.Infrastructure.Database
         public DbSet<Rating> Ratings { get; set; }
 
         public DbSet<Seat> Seats { get; set; }
+
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+
 
 
 
@@ -89,11 +93,19 @@ namespace CinemaApp.Infrastructure.Database
                 .IsUnique();
 
 
-
             modelBuilder.Entity<Reservation>()
                 .HasIndex(x => x.ReservationCode)
                 .IsUnique();
 
+            modelBuilder.Entity<PasswordResetToken>()
+               .HasOne(t => t.User)
+               .WithMany()
+               .HasForeignKey(t => t.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PasswordResetToken>()
+                .HasIndex(x => x.Token)
+                .IsUnique();
         }
 
 

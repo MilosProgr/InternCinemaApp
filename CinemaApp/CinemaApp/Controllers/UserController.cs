@@ -2,10 +2,12 @@
 using CinemaApp.Application.DTO.UsersDTO;
 using CinemaApp.Application.Services.Users;
 using CinemaApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
 {
+    [Authorize(Roles = "ADMIN")]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -21,6 +23,7 @@ namespace CinemaApp.Controllers
 
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var users = await _userService.GetAll();

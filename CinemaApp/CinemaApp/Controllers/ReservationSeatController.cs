@@ -3,10 +3,12 @@ using CinemaApp.Application.DTO.ReservationsDTO.ReservationSeatDTO;
 using CinemaApp.Application.Services.ReservationSeats;
 using CinemaApp.Domain.Entities;
 using CinemaApp.Services.ReservationSeats;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
 {
+    [Authorize(Roles = "ADMIN")]
     [ApiController]
     [Route("api/[controller]")]
     public class ReservationSeatController : ControllerBase
@@ -66,7 +68,7 @@ namespace CinemaApp.Controllers
                 SeatNumber = dto.SeatNumber
             };
 
-
+             
             var created = await _reservationSeatService.Create(seat);
 
 
