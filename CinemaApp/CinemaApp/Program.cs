@@ -1,21 +1,26 @@
-using CinemaApp.Services.Users;
-using CinemaApp.Services.Genres;
-using CinemaApp.Services.Movies;
-using CinemaApp.Services.MovieScreenings;
-using CinemaApp.Services.Reservations;
-using CinemaApp.Services.ReservationSeats;
-using CinemaApp.Services.Ratings;
-using Microsoft.EntityFrameworkCore;
-using CinemaApp.Services.Seats;
-using CinemaApp.Infrastructure.Database;
-using CinemaApp.Application.Services.Users;
+using CinemaApp.Application.Services.Auth;
 using CinemaApp.Application.Services.Genres;
 using CinemaApp.Application.Services.Movies;
 using CinemaApp.Application.Services.MovieScreenings;
+using CinemaApp.Application.Services.Ratings;
 using CinemaApp.Application.Services.Reservations;
 using CinemaApp.Application.Services.ReservationSeats;
-using CinemaApp.Application.Services.Ratings;
 using CinemaApp.Application.Services.Seats;
+using CinemaApp.Application.Services.Users;
+using CinemaApp.Extensions;
+using CinemaApp.Infrastructure.Database;
+using CinemaApp.Infrastructure.Services;
+using CinemaApp.Middleware;
+using CinemaApp.Services.Genres;
+using CinemaApp.Services.Movies;
+using CinemaApp.Services.MovieScreenings;
+using CinemaApp.Services.Ratings;
+using CinemaApp.Services.Reservations;
+using CinemaApp.Services.ReservationSeats;
+using CinemaApp.Services.Seats;
+using CinemaApp.Services.Users;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,10 +32,38 @@ builder.Services.AddControllers();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter JWT token like: Bearer {your token}"
+
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 
-// Database PostgreSQL
+// Database
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(
@@ -39,26 +72,33 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 
-// Services
+// Application Services,povlaci is extensions ServiceCollectionExtensions jer koristi IServiceCollection i odobrava
+builder.Services.AddApplicationServices();
 
-builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddScoped<IGenreService, GenreService>();
+// JWT
+builder.Services.AddJwtAuthentication(
+    builder.Configuration
+);
 
-builder.Services.AddScoped<IMovieService, MovieService>();
 
-builder.Services.AddScoped<IMovieScreeningService, MovieScreeningService>();
 
-builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+           .WithOrigins("http://localhost:4200")
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials();
+    });
+});
 
-builder.Services.AddScoped<IReservationSeatService, ReservationSeatService>();
-
-builder.Services.AddScoped<IRatingService, RatingService>();
-
-builder.Services.AddScoped<ISeatService, SeatService>();
-
-// JWT kasnije
-// builder.Services.AddAuthentication();
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+});
 
 
 
@@ -68,17 +108,50 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.MapOpenApi();
     app.UseSwagger();
 
     app.UseSwaggerUI();
 }
 
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/api/auth/csrf-token")
+    {
+        var antiforgery = context.RequestServices
+            .GetRequiredService<IAntiforgery>();
+
+        var tokens = antiforgery.GetAndStoreTokens(context);
+
+        context.Response.Cookies.Append(
+            "XSRF-TOKEN",
+            tokens.RequestToken!,
+            new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            });
+
+        await context.Response.WriteAsync("CSRF token generated");
+        return;
+    }
+
+    await next();
+});
+
 
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowAll");
+app.UseMiddleware<ExceptionMiddleware>();
+
+
+app.UseAuthentication();
 
 app.UseAuthorization();
+
 
 
 app.MapControllers();

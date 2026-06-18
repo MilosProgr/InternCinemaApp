@@ -3,6 +3,7 @@ using CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO;
 using CinemaApp.Application.Services.Reservations;
 using CinemaApp.Domain.Entities;
 using CinemaApp.Services.Reservations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
@@ -50,7 +51,7 @@ namespace CinemaApp.Controllers
 
 
 
-
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -86,7 +87,7 @@ namespace CinemaApp.Controllers
 
 
 
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Create(CreateReservationDTO dto)
         {
@@ -182,7 +183,7 @@ namespace CinemaApp.Controllers
 
 
 
-
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

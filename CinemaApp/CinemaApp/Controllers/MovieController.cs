@@ -1,9 +1,11 @@
 ﻿using CinemaApp.Application.Services.Movies;
 using CinemaApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MovieController : ControllerBase
@@ -19,6 +21,7 @@ namespace CinemaApp.Controllers
 
 
         // GET: api/Movie
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -30,6 +33,7 @@ namespace CinemaApp.Controllers
 
 
         // GET: api/Movie/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -48,6 +52,7 @@ namespace CinemaApp.Controllers
 
 
         // POST: api/Movie
+        [Authorize(Roles = "ADMIN")]
         [HttpPost]
         public async Task<IActionResult> Create(Movie movie)
         {
@@ -71,6 +76,7 @@ namespace CinemaApp.Controllers
 
 
         // PUT: api/Movie/5
+        [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(
             int id,
@@ -92,6 +98,7 @@ namespace CinemaApp.Controllers
 
 
         // DELETE: api/Movie/5
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

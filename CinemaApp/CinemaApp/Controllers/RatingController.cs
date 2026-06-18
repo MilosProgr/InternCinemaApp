@@ -5,6 +5,7 @@ using CinemaApp.Domain.Entities;
 using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
 
 using CinemaApp.Services.Ratings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
@@ -22,7 +23,7 @@ namespace CinemaApp.Controllers
         }
 
 
-
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -64,7 +65,7 @@ namespace CinemaApp.Controllers
         }
 
 
-
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -87,7 +88,7 @@ namespace CinemaApp.Controllers
         }
 
 
-
+        [Authorize(Roles = "CONSUMER,ADMIN")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateRatingDTO dto)
         {
@@ -115,7 +116,7 @@ namespace CinemaApp.Controllers
 
 
 
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(
             int id,
@@ -143,7 +144,7 @@ namespace CinemaApp.Controllers
 
 
 
-
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

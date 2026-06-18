@@ -3,6 +3,7 @@ using CinemaApp.Application.DTO.SeatsDTO;
 using CinemaApp.Application.Services.Seats;
 using CinemaApp.Domain.Entities;
 using CinemaApp.Services.Seats;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
@@ -19,7 +20,7 @@ namespace CinemaApp.Controllers
             _service = service;
         }
 
-
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -28,6 +29,7 @@ namespace CinemaApp.Controllers
             return Ok(seats);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -40,7 +42,7 @@ namespace CinemaApp.Controllers
         }
 
 
-
+        [Authorize(Roles = "ADMIN")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateSeatDTO dto)
         {
@@ -61,7 +63,7 @@ namespace CinemaApp.Controllers
             return Ok(result);
         }
 
-
+        [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id,UpdateSeatDTO dto)
         {
@@ -82,6 +84,7 @@ namespace CinemaApp.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

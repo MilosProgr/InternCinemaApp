@@ -1,6 +1,7 @@
 ﻿using CinemaApp.Application.DTO.GenresDTO;
 using CinemaApp.Application.Services.Genres;
 using CinemaApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace CinemaApp.Controllers
 {
@@ -46,6 +47,7 @@ namespace CinemaApp.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateGenreDTO genreDto)
         {
@@ -67,6 +69,7 @@ namespace CinemaApp.Controllers
 
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreDTO genreDto)
         {
@@ -86,6 +89,7 @@ namespace CinemaApp.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
