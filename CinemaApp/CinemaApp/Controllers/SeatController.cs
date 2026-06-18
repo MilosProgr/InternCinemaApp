@@ -1,5 +1,7 @@
-﻿using CinemaApp.Models.DTO.SeatsDTO;
-using CinemaApp.Models.Entities;
+﻿
+using CinemaApp.Application.DTO.SeatsDTO;
+using CinemaApp.Application.Services.Seats;
+using CinemaApp.Domain.Entities;
 using CinemaApp.Services.Seats;
 using Microsoft.AspNetCore.Mvc;
 
