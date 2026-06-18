@@ -1,6 +1,7 @@
-﻿using CinemaApp.Models.DTO.UsersDTO;
-using CinemaApp.Models.Entities;
-using CinemaApp.Services.Users;
+﻿
+using CinemaApp.Application.DTO.UsersDTO;
+using CinemaApp.Application.Services.Users;
+using CinemaApp.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
@@ -106,6 +107,8 @@ namespace CinemaApp.Controllers
                 Email = dto.Email,
                 DateOfBirth = dto.DateOfBirth,
                 Role = dto.Role,
+                IsVerified = dto.isVerified,
+                IsBlocked = dto.IsBlocked
                 // privremeno
                 //PasswordHash = dto.Password
             };

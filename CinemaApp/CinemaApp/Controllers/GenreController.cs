@@ -1,10 +1,11 @@
-﻿using CinemaApp.Models.DTO.GenresDTO;
-using CinemaApp.Models.Entities;
-using CinemaApp.Services.Genres;
+﻿using CinemaApp.Application.DTO.GenresDTO;
+using CinemaApp.Application.Services.Genres;
+using CinemaApp.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-
 namespace CinemaApp.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class GenreController : ControllerBase
     {
         private readonly IGenreService _genreService;

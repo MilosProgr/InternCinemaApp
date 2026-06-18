@@ -1,8 +1,8 @@
-﻿using CinemaApp.Models.DTO.MoviesDTO.MovieScreeningsDTO;
+﻿using CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO;
 using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
-using CinemaApp.Models.Entities;
-using CinemaApp.Services.MovieScreenings;
+using CinemaApp.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using CinemaApp.Application.Services.MovieScreenings;
 
 namespace CinemaApp.Controllers
 {
