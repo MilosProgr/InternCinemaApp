@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class GenreController : ControllerBase
     {
         private readonly IGenreService _genreService;
