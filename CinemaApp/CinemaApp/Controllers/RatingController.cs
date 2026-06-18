@@ -1,7 +1,9 @@
-﻿using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
-using CinemaApp.Models.DTO.RatingsDTO;
-using CinemaApp.Models.DTO.UsersDTO;
-using CinemaApp.Models.Entities;
+﻿using CinemaApp.Application.DTO.RatingsDTO;
+using CinemaApp.Application.DTO.UsersDTO;
+using CinemaApp.Application.Services.Ratings;
+using CinemaApp.Domain.Entities;
+using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
+
 using CinemaApp.Services.Ratings;
 using Microsoft.AspNetCore.Mvc;
 

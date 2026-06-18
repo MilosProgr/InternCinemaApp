@@ -1,6 +1,7 @@
-﻿using CinemaApp.Models.DTO.ReservationsDTO;
-using CinemaApp.Models.DTO.ReservationsDTO.ReservationDTO;
-using CinemaApp.Models.Entities;
+﻿
+using CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO;
+using CinemaApp.Application.Services.Reservations;
+using CinemaApp.Domain.Entities;
 using CinemaApp.Services.Reservations;
 using Microsoft.AspNetCore.Mvc;
 

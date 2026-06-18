@@ -1,5 +1,5 @@
-﻿using CinemaApp.Models.Entities;
-using CinemaApp.Services.Movies;
+﻿using CinemaApp.Application.Services.Movies;
+using CinemaApp.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
