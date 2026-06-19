@@ -4,6 +4,8 @@ import { ReservationSeat } from './reservation_seat.model';
 export interface Reservation  {
 
 
+    id: number;
+    
     userId?:number;
 
 

@@ -1,8 +1,9 @@
 ﻿using CinemaApp.Application.Common.HATEOAS;
 using CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO;
 using CinemaApp.Application.Services.MovieScreenings;
-using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
 using CinemaApp.Domain.Entities;
+using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
+using iText.Kernel.Geom;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,37 +23,80 @@ namespace CinemaApp.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
         {
-            var screenings = await _movieScreeningService.GetAll();
+            var paged = await _movieScreeningService.GetPaged(page, pageSize);
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/MovieScreening";
 
+            var collectionLinks = new List<Link>
+    {
+        new Link(
+            $"{baseUrl}?page={page}&pageSize={pageSize}",
+            "self",
+            "GET")
+    };
 
-            return Ok(screenings.Select(x => new MovieScreeningDTOResponse
+            if (User.IsInRole("ADMIN"))
             {
-                Id = x.Id,
-                MovieId = x.MovieId,
+                collectionLinks.Add(
+                    new Link(baseUrl, "create", "POST"));
+            }
 
-                Movie = x.Movie == null ? null : new MovieDTOResponse
+            if (page > 1)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page - 1}&pageSize={pageSize}",
+                        "prev",
+                        "GET"));
+            }
+
+            if (page < paged.TotalPages)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page + 1}&pageSize={pageSize}",
+                        "next",
+                        "GET"));
+            }
+
+            return Ok(new
+            {
+                items = paged.Items.Select(x => new MovieScreeningDTOResponse
                 {
-                    Id = x.Movie.Id,
-                    Name = x.Movie.Name,
-                    OriginalName = x.Movie.OriginalName,
-                    Duration = x.Movie.Duration,
-                    PosterUrl = x.Movie.PosterUrl,
-                    GenreId = x.Movie.GenreId
-                },
+                    Id = x.Id,
+                    MovieId = x.MovieId,
 
-                StartTime = x.StartTime,
-                TicketPrice = x.TicketPrice,
-                AvailableSeats = x.AvailableSeats,
+                    Movie = x.Movie == null ? null : new MovieDTOResponse
+                    {
+                        Id = x.Movie.Id,
+                        Name = x.Movie.Name,
+                        OriginalName = x.Movie.OriginalName,
+                        Duration = x.Movie.Duration,
+                        PosterUrl = x.Movie.PosterUrl,
+                        GenreId = x.Movie.GenreId
+                    },
 
-                Links = MovieScreeningLinkBuilder.Build(
-                    x,
-                    baseUrl,
-                    User)
-            }));
+                    StartTime = x.StartTime,
+                    TicketPrice = x.TicketPrice,
+                    AvailableSeats = x.AvailableSeats,
+
+                    Links = MovieScreeningLinkBuilder.Build(
+                        x,
+                        baseUrl,
+                        User)
+                }),
+
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize,
+                paged.TotalPages,
+
+                Links = collectionLinks
+            });
         }
 
 

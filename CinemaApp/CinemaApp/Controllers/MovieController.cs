@@ -60,6 +60,8 @@ namespace CinemaApp.Controllers
                     m.Id,
                     m.Name,
                     m.OriginalName,
+                    m.Duration,
+                    m.PosterUrl,
 
                     Links = MovieLinkBuilder.Build(
                         m,

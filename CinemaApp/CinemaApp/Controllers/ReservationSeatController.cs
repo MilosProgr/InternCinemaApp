@@ -24,24 +24,61 @@ namespace CinemaApp.Controllers
 
         [Authorize(Roles = "ADMIN,CONSUMER")]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
         {
-            var seats = await _reservationSeatService.GetAll();
+            var paged = await _reservationSeatService.GetPaged(page, pageSize);
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/ReservationSeat";
 
+            var collectionLinks = new List<Link>
+    {
+        new Link(
+            $"{baseUrl}?page={page}&pageSize={pageSize}",
+            "self",
+            "GET")
+    };
 
-            return Ok(seats.Select(s => new ReservationSeatDTOResponse
+            if (page > 1)
             {
-                Id = s.Id,
-                ReservationId = s.ReservationId,
-                SeatNumber = s.SeatNumber,
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page - 1}&pageSize={pageSize}",
+                        "prev",
+                        "GET"));
+            }
 
-                Links = ReservationSeatLinkBuilder.Build(
-                    s,
-                    baseUrl,
-                    User)
-            }));
+            if (page < paged.TotalPages)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page + 1}&pageSize={pageSize}",
+                        "next",
+                        "GET"));
+            }
+
+            return Ok(new
+            {
+                items = paged.Items.Select(s => new ReservationSeatDTOResponse
+                {
+                    Id = s.Id,
+                    ReservationId = s.ReservationId,
+                    SeatNumber = s.SeatNumber,
+
+                    Links = ReservationSeatLinkBuilder.Build(
+                        s,
+                        baseUrl,
+                        User)
+                }),
+
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize,
+                paged.TotalPages,
+
+                Links = collectionLinks
+            });
         }
 
 

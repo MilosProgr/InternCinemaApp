@@ -112,7 +112,12 @@ namespace CinemaApp.Services.Reservations
         public async Task<PagedResult<Reservation>> GetPaged(int page, int pageSize)
         {
             var total = await _context.Reservations.CountAsync();
+
             var items = await _context.Reservations
+                .Include(r => r.User)
+                .Include(r => r.MovieScreening)
+                    .ThenInclude(ms => ms.Movie)
+                .Include(r => r.Seats)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

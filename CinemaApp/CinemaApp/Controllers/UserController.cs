@@ -22,29 +22,72 @@ namespace CinemaApp.Controllers
 
 
 
-        [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll()
+        [HttpGet]
+        public async Task<IActionResult> GetAll(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
         {
-            var users = await _userService.GetAll();
+            var paged = await _userService.GetPaged(page, pageSize);
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/User";
 
+            var collectionLinks = new List<Link>
+    {
+        new Link(
+            $"{baseUrl}?page={page}&pageSize={pageSize}",
+            "self",
+            "GET")
+    };
 
-            return Ok(users.Select(u => new UserDTOResponse
+            if (User.IsInRole("ADMIN"))
             {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Username = u.Username,
-                Email = u.Email,
-                Role = u.Role,
+                collectionLinks.Add(
+                    new Link(baseUrl, "create", "POST"));
+            }
 
-                Links = UserLinkBuilder.Build(
-                    u,
-                    baseUrl,
-                    User)
-            }));
+            if (page > 1)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page - 1}&pageSize={pageSize}",
+                        "prev",
+                        "GET"));
+            }
+
+            if (page < paged.TotalPages)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page + 1}&pageSize={pageSize}",
+                        "next",
+                        "GET"));
+            }
+
+            return Ok(new
+            {
+                items = paged.Items.Select(u => new UserDTOResponse
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Username = u.Username,
+                    Email = u.Email,
+                    Role = u.Role,
+
+                    Links = UserLinkBuilder.Build(
+                        u,
+                        baseUrl,
+                        User)
+                }),
+
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize,
+                paged.TotalPages,
+
+                Links = collectionLinks
+            });
         }
 
 

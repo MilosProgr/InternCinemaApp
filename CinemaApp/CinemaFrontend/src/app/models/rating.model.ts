@@ -2,11 +2,12 @@
 
 export interface Rating  {
 
+    id: number;
 
-    userId:number;
+    userId?:number;
 
 
-    movieId:number;
+    movieId?:number;
 
 
     stars:number;

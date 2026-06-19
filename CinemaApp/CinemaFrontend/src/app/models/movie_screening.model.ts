@@ -4,6 +4,8 @@ import {Movie} from './movie.model';
 
 export interface MovieScreening  {
 
+    id: number,
+    
     movieId:number;
 
     movie:Movie;

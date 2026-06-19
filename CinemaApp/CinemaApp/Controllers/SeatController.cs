@@ -23,29 +23,68 @@ namespace CinemaApp.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
         {
-            var seats = await _service.GetAll();
+            var paged = await _service.GetPaged(page, pageSize);
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Seat";
 
+            var collectionLinks = new List<Link>
+    {
+        new Link(
+            $"{baseUrl}?page={page}&pageSize={pageSize}",
+            "self",
+            "GET")
+    };
 
-            var result = seats.Select(s => new SeatDTOResponse
+            if (User.IsInRole("ADMIN"))
             {
-                Id = s.Id,
-                Row = s.Row,
-                Number = s.Number,
+                collectionLinks.Add(
+                    new Link(baseUrl, "create", "POST"));
+            }
 
-                Links = SeatLinkBuilder.Build(
-                    s,
-                    baseUrl,
-                    User)
+            if (page > 1)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page - 1}&pageSize={pageSize}",
+                        "prev",
+                        "GET"));
+            }
+
+            if (page < paged.TotalPages)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page + 1}&pageSize={pageSize}",
+                        "next",
+                        "GET"));
+            }
+
+            return Ok(new
+            {
+                items = paged.Items.Select(s => new SeatDTOResponse
+                {
+                    Id = s.Id,
+                    Row = s.Row,
+                    Number = s.Number,
+
+                    Links = SeatLinkBuilder.Build(
+                        s,
+                        baseUrl,
+                        User)
+                }),
+
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize,
+                paged.TotalPages,
+
+                Links = collectionLinks
             });
-
-
-            return Ok(result);
         }
-
 
 
         [AllowAnonymous]

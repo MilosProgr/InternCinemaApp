@@ -22,36 +22,66 @@ namespace CinemaApp.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var reservations = await _reservationService.GetAll();
+            var paged = await _reservationService.GetPaged(page, pageSize);
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Reservation";
 
+            var collectionLinks = new List<Link>
+    {
+        new Link(
+            $"{baseUrl}?page={page}&pageSize={pageSize}",
+            "self",
+            "GET")
+    };
 
-            return Ok(reservations.Select(r => new ReservationDTOResponse
+            if (page > 1)
             {
-                Id = r.Id,
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page - 1}&pageSize={pageSize}",
+                        "prev",
+                        "GET"));
+            }
 
-                UserId = r.UserId,
+            if (page < paged.TotalPages)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page + 1}&pageSize={pageSize}",
+                        "next",
+                        "GET"));
+            }
 
-                GuestEmail = r.GuestEmail,
+            return Ok(new
+            {
+                items = paged.Items.Select(r => new ReservationDTOResponse
+                {
+                    Id = r.Id,
+                    UserId = r.UserId,
+                    GuestEmail = r.GuestEmail,
+                    MovieScreeningId = r.MovieScreeningId,
+                    ReservationCode = r.ReservationCode,
+                    TotalPrice = r.TotalPrice,
+                    CreatedAt = r.CreatedAt,
+                    IsCancelled = r.IsCancelled,
 
-                MovieScreeningId = r.MovieScreeningId,
+                    Links = ReservationLinkBuilder.Build(
+                        r,
+                        baseUrl,
+                        User)
+                }),
 
-                ReservationCode = r.ReservationCode,
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize,
+                paged.TotalPages,
 
-                TotalPrice = r.TotalPrice,
-
-                CreatedAt = r.CreatedAt,
-
-                IsCancelled = r.IsCancelled,
-
-                Links = ReservationLinkBuilder.Build(
-                    r,
-                    baseUrl,
-                    User)
-            }));
+                Links = collectionLinks
+            });
         }
 
 

@@ -89,7 +89,10 @@ namespace CinemaApp.Services.Ratings
         public async Task<PagedResult<Rating>> GetPaged(int page, int pageSize)
         {
             var total = await _context.Ratings.CountAsync();
+
             var items = await _context.Ratings
+                .Include(r => r.User)
+                .Include(r => r.Movie)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
