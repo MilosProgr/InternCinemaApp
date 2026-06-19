@@ -1,80 +1,47 @@
-import { NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input'
+import { CommonModule } from '@angular/common';
+
+export interface Identifiable {
+  id: number;
+}
+
+export interface TableColumn<T> {
+  label: string;
+  key: keyof T;
+}
+
 @Component({
-  selector: 'app-generic-reusable-table',
-  imports: [NgIf,NgFor],
+  selector: 'app-generic-table',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './generic-reusable-table.html',
-  styleUrl: './generic-reusable-table.css',
+  styleUrl: './generic-reusable-table.css'
 })
-export class GenericReusableTable {
-  @Input() podaci: unknown[] = [];
-  @Input() kljucevi: { imeKolone: string; kljuc: string }[] = [];
-  @Input() kljuceviStringovi: string[] = [];
+export class GenericTableComponent<T extends Identifiable> {
 
-  @Input() editRoute = '/';
-  @Input() naslov = '';
+  @Input() data: T[] = [];
 
-  @Output() obrisiEvent = new EventEmitter<number>();
-  @Output() izmeniEvent = new EventEmitter<number>();
+  @Input() columns: TableColumn<T>[] = [];
 
-  currentPage = 1;
-  itemsPerPage = 15;
+  @Input() showActions: boolean = false;
 
-  ukloni(id: number): void {
-    this.obrisiEvent.emit(id);
+
+  @Output() edit = new EventEmitter<T>();
+
+  @Output() delete = new EventEmitter<number>();
+
+
+  getValue(item: T, key: keyof T): any {
+    return item[key];
   }
 
-  izmena(id: number): void {
-    this.izmeniEvent.emit(id);
+
+  onEdit(item: T): void {
+    this.edit.emit(item);
   }
 
-  isArray(value: unknown): value is unknown[] {
-    return Array.isArray(value);
-  }
 
-  isObject(value: unknown): value is Record<string, unknown> {
-    return value !== null && typeof value === 'object' && !Array.isArray(value);
-  }
-
-  getObjectKeys(obj: Record<string, unknown>): string[] {
-    return Object.keys(obj);
-  }
-
-  getJoinedValues(value: unknown): string {
-    if (Array.isArray(value)) {
-      return value
-        .map((obj: unknown) => {
-          if (typeof obj !== 'object' || obj === null) {
-            return String(obj);
-          }
-
-          const o = obj as Record<string, unknown>;
-
-          const korisnik = o['korisnik'] as Record<string, unknown> | undefined;
-
-          return (
-            (korisnik?.['korisnickoIme'] as string) ||
-            (o['ime'] as string) ||
-            (o['id'] as string | number) ||
-            ''
-          );
-        })
-        .join(', ');
-    }
-
-    return String(value);
-  }
-
-  getKljucevi(): { imeKolone: string; kljuc: string }[] {
-    if (this.kljucevi.length > 0) {
-      return this.kljucevi;
-    }
-
-    return this.kljuceviStringovi.map(k => ({
-      imeKolone: k,
-      kljuc: k
-    }));
+  onDelete(id: number): void {
+    this.delete.emit(id);
   }
 }

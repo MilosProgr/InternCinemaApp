@@ -1,66 +1,86 @@
-<p>generic-reusable-table works!</p>
-<!-- <table>
-    <thead>
-        <tr>
-            <th *ngFor="let k  of kljucevi;">
-                {{k}}
-            </th>
-            <th>Akcije</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngIf="!podaci || podaci.length === 0">
-            <td [attr.colspan]="kljucevi.length + 1" class="text-center">Nema podataka!</td>
-        </tr>
+<table>
 
-        <tr *ngFor="let podatak of podaci; index as i">
-            <td *ngFor="let a of kljucevi">{{ podatak[a] }}</td>
-            <td>
-                <button class="btn btn-primary mx-auto my-3" (click)="ukloni(podatak.id)">Ukloni</button>
-                <button class="btn btn-primary mx-auto my-3" [routerLink]="[editRoute, podatak.id]">Izmeni</button>
-            </td>
-        </tr>
-    </tbody>
-</table> -->
-<ng-container>
-  <h2 *ngIf="naslov">{{ naslov }}</h2>
-  <br>
-  <table>
-    <thead>
-      <tr>
-        <th *ngFor="let kolona of getKljucevi();">
-          {{ kolona.imeKolone || kolona }}
-        </th>
-        <th>Akcije</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngIf="!podaci || podaci.length === 0">
-        <td [attr.colspan]="getKljucevi().length + 1" class="text-center">Nema podataka!</td>
-      </tr>
+<thead>
+<tr>
 
-      <tr *ngFor="let podatak of podaci | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }; index as i">
-        <td *ngFor="let kolona of getKljucevi()">
-          <ng-container *ngIf="isArray(podatak[kolona.kljuc || kolona]); else notArray">
-            {{ getJoinedValues(podatak[kolona.kljuc || kolona]) }}
-          </ng-container>
-          <ng-template #notArray>
-            <ng-container *ngIf="isObject(podatak[kolona.kljuc || kolona]); else singleValue">
-              <div *ngFor="let key of getObjectKeys(podatak[kolona.kljuc || kolona])">
-                <strong>{{ key }}:</strong> {{ getJoinedValues(podatak[kolona.kljuc || kolona][key]) }}
-              </div>
-            </ng-container>
-            <ng-template #singleValue>{{ podatak[kolona.kljuc || kolona] }}</ng-template>
-          </ng-template>
-        </td>
-        <td>
-          <button class="btn btn-primary mx-auto my-3" (click)="ukloni(podatak.id)">Ukloni</button>
-          <button class="btn btn-primary mx-auto my-3" [routerLink]="[editRoute, podatak.id]">Izmeni</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+@for(column of columns; track column.key) {
 
-  <!-- Paginacija -->
-  <!-- <pagination-controls (pageChange)="currentPage = $event"></pagination-controls> -->
-</ng-container>
+<th>
+    {{column.label}}
+</th>
+
+}
+
+
+@if(showActions) {
+
+<th>
+    Akcije
+</th>
+
+}
+
+</tr>
+</thead>
+
+
+<tbody>
+
+
+@if(data.length === 0) {
+
+<tr>
+<td [attr.colspan]="columns.length + (showActions ? 1 : 0)">
+    Nema podataka!
+</td>
+</tr>
+
+}
+
+@else {
+
+
+@for(item of data; track item.id) {
+
+<tr>
+
+
+@for(column of columns; track column.key) {
+
+<td>
+    {{ getValue(item, column.key) }}
+</td>
+
+}
+
+
+@if(showActions) {
+
+<td>
+
+<button (click)="onEdit(item)">
+Izmeni
+</button>
+
+
+<button (click)="onDelete(item.id)">
+Obriši
+</button>
+
+</td>
+
+}
+
+
+</tr>
+
+}
+
+
+}
+
+
+</tbody>
+
+
+</table>

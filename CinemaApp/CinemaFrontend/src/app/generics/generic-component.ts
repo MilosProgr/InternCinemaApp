@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef  } from '@angular/core';
 import { CrudService } from './generic-service';
 
 
@@ -6,11 +6,12 @@ import { CrudService } from './generic-service';
     template: ''
 })
 export abstract class GenericCrudComponent<T> implements OnInit {
-    @Input() entities: T[] = [];
+    entities: T[] = [];
     selectedEntity: T | null = null;
 
     constructor(
-        private crudService: CrudService<T>,
+        protected crudService: CrudService<T>,
+        protected cdr: ChangeDetectorRef 
     ) { }
 
     ngOnInit(): void {
@@ -19,7 +20,8 @@ export abstract class GenericCrudComponent<T> implements OnInit {
 
     getAllEntities() {
         this.crudService.getAll().subscribe(entities => {
-            this.entities = entities;
+            this.entities = [...entities];  // ← novi niz, nova referenca
+            this.cdr.detectChanges();  
         });
     }
 

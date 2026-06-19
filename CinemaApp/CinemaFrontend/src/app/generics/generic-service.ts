@@ -11,6 +11,7 @@ export const BASE_URL = new InjectionToken<string>('BASE_URL');
     providedIn: 'root'
 })
 export class CrudService<T> {
+
     constructor(
         private httpClient: HttpClient,
         @Inject(BASE_URL) protected baseUrl: string

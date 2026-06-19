@@ -1,49 +1,59 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoginService } from '../../services/login/login';
 import { Router } from '@angular/router';
-import { NgFor, NgIf } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+
 
 @Component({
   selector: 'app-login-component',
-  imports: [NgIf,NgFor],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgFor,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
+  ],
   templateUrl: './login-component.html',
   styleUrl: './login-component.css',
 })
 export class LoginComponent {
+
   title = 'Login page';
 
   loginForma: FormGroup = new FormGroup({
     username: new FormControl(null, Validators.required),
     password: new FormControl(null, Validators.required),
   });
+
   loginFailed = false;
 
-  constructor(public loginService: LoginService, private router: Router) { }
+  constructor(
+    public loginService: LoginService,
+    private router: Router
+  ) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
-  //Login
   login() {
     if (this.loginForma.valid) {
       this.loginService.login(this.loginForma.value).subscribe(
-
         (res: any) => {
           if (res.token) {
-            console.log("Working")
+            console.log("Working");
             this.router.navigate(['/Genre']);
-
           } else {
-            console.log(res.message)
+            console.log(res.message);
             this.loginFailed = true;
-
           }
-        },
-
-
-
+        }
       );
     }
-
   }
 }
