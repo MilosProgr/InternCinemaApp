@@ -3,6 +3,8 @@ import { Genre } from "./genre.model";
 
 export interface Movie {
 
+    id: number;
+    
     name:string;
 
     originalName:string;

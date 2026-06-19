@@ -106,6 +106,8 @@ namespace CinemaApp.Services.ReservationSeats
         {
             var total = await _context.ReservationSeats.CountAsync();
             var items = await _context.ReservationSeats
+                .Include(x => x.Reservation)
+                .OrderBy(x => x.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

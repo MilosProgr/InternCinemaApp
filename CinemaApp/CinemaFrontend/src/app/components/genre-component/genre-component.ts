@@ -61,6 +61,24 @@ implements OnInit {
     });
 }
 
-
+  movie(){
+    console.log('Kliknuto dugme za filmove');
+    this.router.navigate(['/Movie']);
+  }
+  movieScreening() {
+      this.router.navigate(['/MovieScreening']);
+  }
+  reservation() {
+    this.router.navigate(['/Reservation']);
+  }
+  reservationSeat() {
+    this.router.navigate(['/ReservationSeat']);
+  }
+  seat() {
+    this.router.navigate(['/Seat']);
+  }
+  rating() {
+    this.router.navigate(['/Rating']);
+  }
 
 }

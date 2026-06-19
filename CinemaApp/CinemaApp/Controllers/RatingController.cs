@@ -25,53 +25,80 @@ namespace CinemaApp.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1,[FromQuery] int pageSize = 10)
         {
-            var ratings = await _ratingService.GetAll();
+            var paged = await _ratingService.GetPaged(page, pageSize);
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Rating";
 
+            var collectionLinks = new List<Link>
+    {
+        new Link(
+            $"{baseUrl}?page={page}&pageSize={pageSize}",
+            "self",
+            "GET")
+    };
 
-            return Ok(ratings.Select(r => new RatingDTOResponse
+            if (page > 1)
             {
-                Id = r.Id,
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page - 1}&pageSize={pageSize}",
+                        "prev",
+                        "GET"));
+            }
 
-                UserId = r.UserId,
+            if (page < paged.TotalPages)
+            {
+                collectionLinks.Add(
+                    new Link(
+                        $"{baseUrl}?page={page + 1}&pageSize={pageSize}",
+                        "next",
+                        "GET"));
+            }
 
-                MovieId = r.MovieId,
-
-                Stars = r.Stars,
-
-                CreatedAt = r.CreatedAt,
-
-
-                User = new UserDTOResponse
+            return Ok(new
+            {
+                items = paged.Items.Select(r => new RatingDTOResponse
                 {
-                    Id = r.User.Id,
-                    Username = r.User.Username,
-                    FirstName = r.User.FirstName,
-                    LastName = r.User.LastName,
-                    Email = r.User.Email,
-                    Role = r.User.Role
-                },
+                    Id = r.Id,
+                    UserId = r.UserId,
+                    MovieId = r.MovieId,
+                    Stars = r.Stars,
+                    CreatedAt = r.CreatedAt,
 
+                    User = new UserDTOResponse
+                    {
+                        Id = r.User.Id,
+                        Username = r.User.Username,
+                        FirstName = r.User.FirstName,
+                        LastName = r.User.LastName,
+                        Email = r.User.Email,
+                        Role = r.User.Role
+                    },
 
-                Movie = new MovieDTOResponse
-                {
-                    Id = r.Movie.Id,
-                    Name = r.Movie.Name,
-                    OriginalName = r.Movie.OriginalName,
-                    Duration = r.Movie.Duration,
-                    PosterUrl = r.Movie.PosterUrl
-                },
+                    Movie = new MovieDTOResponse
+                    {
+                        Id = r.Movie.Id,
+                        Name = r.Movie.Name,
+                        OriginalName = r.Movie.OriginalName,
+                        Duration = r.Movie.Duration,
+                        PosterUrl = r.Movie.PosterUrl
+                    },
 
+                    Links = RatingLinkBuilder.Build(
+                        r,
+                        baseUrl,
+                        User)
+                }),
 
-                Links = RatingLinkBuilder.Build(
-                    r,
-                    baseUrl,
-                    User)
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize,
+                paged.TotalPages,
 
-            }));
+                Links = collectionLinks
+            });
         }
 
 
