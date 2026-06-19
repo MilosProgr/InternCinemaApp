@@ -2,7 +2,15 @@
 
 
 
+<!-- genre.component.html -->
 <app-generic-table
-    [data]="entities"
-    [columns]="columns">
+  [data]="entities"
+  [columns]="columns"
+  [showActions]="true"
+  [currentPage]="currentPage"
+  [totalPages]="totalPages"
+  [links]="links"
+  (edit)="edit($event)"
+  (delete)="delete($event)"
+  (pageChange)="goToPage($event)">
 </app-generic-table>

@@ -53,11 +53,11 @@ implements OnInit {
   }
 
   override getAllEntities() {
-    this.crudService.getAll().subscribe(entities => {
-        console.log('Podaci stigli:', entities);  // ← dodaj ovo
-        this.entities = [...entities];  // novi niz, nova referenca
-        this.cdr.detectChanges(); 
-        console.log('entities posle assignovanja:', this.entities);  // ← i ovo
+    this.crudService.getPaged(this.currentPage, this.pageSize).subscribe(result => {
+        this.entities = [...result.items];
+        this.totalPages = result.totalPages;
+        this.links = result.links;
+        this.cdr.detectChanges();
     });
 }
 

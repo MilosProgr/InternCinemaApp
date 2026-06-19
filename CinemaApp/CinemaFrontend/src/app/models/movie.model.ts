@@ -1,7 +1,7 @@
 import { Genre } from "./genre.model";
-import { HateoasResponse } from "./hateoas.model";
+// import { HateoasResponse } from "./hateoas.model";
 
-export interface Movie extends HateoasResponse {
+export interface Movie {
 
     name:string;
 

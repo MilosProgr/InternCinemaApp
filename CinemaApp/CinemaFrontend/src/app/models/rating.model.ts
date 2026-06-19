@@ -1,7 +1,6 @@
-import {HateoasResponse} from './hateoas.model';
 
 
-export interface Rating extends HateoasResponse {
+export interface Rating  {
 
 
     userId:number;

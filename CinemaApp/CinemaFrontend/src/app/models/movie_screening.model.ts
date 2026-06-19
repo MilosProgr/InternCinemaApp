@@ -1,8 +1,8 @@
-import {HateoasResponse} from './hateoas.model';
+// import {HateoasResponse} from './hateoas.model';
 import {Movie} from './movie.model';
 
 
-export interface MovieScreening extends HateoasResponse {
+export interface MovieScreening  {
 
     movieId:number;
 

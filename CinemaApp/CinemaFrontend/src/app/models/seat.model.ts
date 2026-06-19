@@ -1,7 +1,6 @@
-import {HateoasResponse} from './hateoas.model';
 
 
-export interface Seat extends HateoasResponse {
+export interface Seat  {
 
     row:string;
 

@@ -1,7 +1,6 @@
-import {HateoasResponse} from './hateoas.model';
 
 
-export interface User extends HateoasResponse {
+export interface User  {
 
 
     username:string;

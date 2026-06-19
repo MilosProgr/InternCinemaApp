@@ -1,86 +1,49 @@
 <table>
+  <thead>
+    <tr>
+      @for(column of columns; track column.key) {
+        <th>{{ column.label }}</th>
+      }
+      @if(showActions) {
+        <th>Akcije</th>
+      }
+    </tr>
+  </thead>
 
-<thead>
-<tr>
-
-@for(column of columns; track column.key) {
-
-<th>
-    {{column.label}}
-</th>
-
-}
-
-
-@if(showActions) {
-
-<th>
-    Akcije
-</th>
-
-}
-
-</tr>
-</thead>
-
-
-<tbody>
-
-
-@if(data.length === 0) {
-
-<tr>
-<td [attr.colspan]="columns.length + (showActions ? 1 : 0)">
-    Nema podataka!
-</td>
-</tr>
-
-}
-
-@else {
-
-
-@for(item of data; track item.id) {
-
-<tr>
-
-
-@for(column of columns; track column.key) {
-
-<td>
-    {{ getValue(item, column.key) }}
-</td>
-
-}
-
-
-@if(showActions) {
-
-<td>
-
-<button (click)="onEdit(item)">
-Izmeni
-</button>
-
-
-<button (click)="onDelete(item.id)">
-Obriši
-</button>
-
-</td>
-
-}
-
-
-</tr>
-
-}
-
-
-}
-
-
-</tbody>
-
-
+  <tbody>
+    @if(data.length === 0) {
+      <tr>
+        <td [attr.colspan]="columns.length + (showActions ? 1 : 0)">
+          Nema podataka!
+        </td>
+      </tr>
+    } @else {
+      @for(item of data; track item.id) {
+        <tr>
+          @for(column of columns; track column.key) {
+            <td>{{ getValue(item, column.key) }}</td>
+          }
+          @if(showActions) {
+            <td>
+              <button (click)="onEdit(item)">Izmeni</button>
+              <button (click)="onDelete(item.id)">Obriši</button>
+            </td>
+          }
+        </tr>
+      }
+    }
+  </tbody>
 </table>
+
+<!-- Paginacija -->
+<div class="pagination">
+  <button [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
+    ← Prethodna
+  </button>
+
+  <span>Strana {{ currentPage }} od {{ totalPages }}</span>
+
+  <button [disabled]="currentPage === totalPages" (click)="onPageChange(currentPage + 1)">
+    Sledeća →
+  </button>
+</div>

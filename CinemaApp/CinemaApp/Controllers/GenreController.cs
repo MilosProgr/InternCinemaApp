@@ -1,4 +1,5 @@
-﻿using CinemaApp.Application.DTO.GenresDTO;
+﻿using CinemaApp.Application.Common.HATEOAS;
+using CinemaApp.Application.DTO.GenresDTO;
 using CinemaApp.Application.Services.Genres;
 using CinemaApp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -17,20 +18,50 @@ namespace CinemaApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var genres = await _genreService.GetAll();
+            var paged = await _genreService.GetPaged(page, pageSize);
 
-            var result = genres.Select(g => new GenreDTOResponse
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Genre";
+
+            var links = new List<Link>
+    {
+        new Link($"{baseUrl}?page={page}&pageSize={pageSize}", "self", "GET"),
+        new Link($"{baseUrl}", "create", "POST")
+    };
+
+            if (page > 1)
+                links.Add(new Link($"{baseUrl}?page={page - 1}&pageSize={pageSize}", "prev", "GET"));
+
+            if (page < paged.TotalPages)
+                links.Add(new Link($"{baseUrl}?page={page + 1}&pageSize={pageSize}", "next", "GET"));
+
+            paged.Links = links;
+
+            var result = new
             {
-                
-                Id = g.Id,
-                Name = g.Name
-            });
+                items = paged.Items.Select(g => new GenreDTOResponse
+                {
+                    Id = g.Id,
+                    Name = g.Name,
+                    
+                    Links = new List<Link>
+            {
+                new Link($"{baseUrl}/{g.Id}", "self",   "GET"),
+                new Link($"{baseUrl}/{g.Id}", "update", "PUT"),
+                new Link($"{baseUrl}/{g.Id}", "delete", "DELETE")
+            }
+                }),
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize,
+                paged.TotalPages,
+                paged.Links
+            };
 
             return Ok(result);
-
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
