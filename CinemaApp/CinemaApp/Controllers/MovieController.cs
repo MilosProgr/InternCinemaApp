@@ -1,4 +1,5 @@
-﻿using CinemaApp.Application.Services.Movies;
+﻿using CinemaApp.Application.Common.HATEOAS;
+using CinemaApp.Application.Services.Movies;
 using CinemaApp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,19 +21,66 @@ namespace CinemaApp.Controllers
 
 
 
-        // GET: api/Movie
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var movies = await _movieService.GetAll();
+            var paged = await _movieService.GetPaged(page, pageSize);
 
-            return Ok(movies);
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Movie";
+
+
+            var links = new List<Link>
+            {
+                new Link(
+                    $"{baseUrl}?page={page}&pageSize={pageSize}",
+                    "self",
+                    "GET")
+            };
+
+
+            if (User.IsInRole("ADMIN"))
+            {
+                links.Add(
+                    new Link(
+                        $"{baseUrl}",
+                        "create",
+                        "POST")
+                );
+            }
+
+
+            var result = new
+            {
+                items = paged.Items.Select(m => new
+                {
+                    m.Id,
+                    m.Name,
+                    m.OriginalName,
+
+                    Links = MovieLinkBuilder.Build(
+                        m,
+                        baseUrl,
+                        User)
+                }),
+
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize,
+                paged.TotalPages,
+
+                Links = links
+            };
+
+
+            return Ok(result);
         }
 
 
 
-        // GET: api/Movie/5
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -41,17 +89,31 @@ namespace CinemaApp.Controllers
 
 
             if (movie == null)
-            {
                 return NotFound();
-            }
 
 
-            return Ok(movie);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Movie";
+
+
+            var result = new
+            {
+                movie.Id,
+                movie.Name,
+                movie.OriginalName,
+
+                Links = MovieLinkBuilder.Build(
+                    movie,
+                    baseUrl,
+                    User)
+            };
+
+
+            return Ok(result);
         }
 
 
 
-        // POST: api/Movie
+
         [Authorize(Roles = "ADMIN")]
         [HttpPost]
         public async Task<IActionResult> Create(Movie movie)
@@ -60,22 +122,36 @@ namespace CinemaApp.Controllers
 
 
             if (createdMovie == null)
-            {
                 return BadRequest();
-            }
+
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Movie";
+
+
+            var result = new
+            {
+                createdMovie.Id,
+                createdMovie.Name,
+                createdMovie.OriginalName,
+
+                Links = MovieLinkBuilder.Build(
+                    createdMovie,
+                    baseUrl,
+                    User)
+            };
 
 
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = createdMovie.Id },
-                createdMovie
+                result
             );
         }
 
 
 
 
-        // PUT: api/Movie/5
+
         [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(
@@ -86,18 +162,31 @@ namespace CinemaApp.Controllers
 
 
             if (updatedMovie == null)
-            {
                 return NotFound();
-            }
 
 
-            return Ok(updatedMovie);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Movie";
+
+
+            var result = new
+            {
+                updatedMovie.Id,
+                updatedMovie.Name,
+                updatedMovie.OriginalName,
+
+                Links = MovieLinkBuilder.Build(
+                    updatedMovie,
+                    baseUrl,
+                    User)
+            };
+
+
+            return Ok(result);
         }
 
 
 
 
-        // DELETE: api/Movie/5
         [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -106,9 +195,7 @@ namespace CinemaApp.Controllers
 
 
             if (!result)
-            {
                 return NotFound();
-            }
 
 
             return NoContent();

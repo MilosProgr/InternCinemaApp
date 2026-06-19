@@ -1,10 +1,14 @@
-﻿using CinemaApp.Domain.Entities;
+﻿using CinemaApp.Application.Common.Models;
+using CinemaApp.Domain.Entities;
 
 namespace CinemaApp.Application.Services.Ratings
 {
     public interface IRatingService
     {
         Task<List<Rating>> GetAll();
+
+
+        Task<PagedResult<Rating>> GetPaged(int page, int pageSize);
 
         Task<Rating?> GetById(int id);
 

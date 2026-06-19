@@ -1,4 +1,6 @@
-﻿namespace CinemaApp.Application.DTO.SeatDTO
+﻿using CinemaApp.Application.Common.HATEOAS;
+
+namespace CinemaApp.Application.DTO.SeatDTO
 {
     public record SeatDTOResponse
     {
@@ -9,5 +11,6 @@
 
 
         public int Number { get; set; }
+        public List<Link> Links { get; set; }
     }
 }

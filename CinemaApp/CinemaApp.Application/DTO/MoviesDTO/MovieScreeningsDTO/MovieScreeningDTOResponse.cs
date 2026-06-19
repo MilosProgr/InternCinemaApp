@@ -1,4 +1,5 @@
-﻿using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
+﻿using CinemaApp.Application.Common.HATEOAS;
+using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
 
 namespace CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO
 
@@ -21,5 +22,6 @@ namespace CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO
 
 
         public int AvailableSeats { get; set; }
+        public List<Link> Links { get; set; }
     }
 }

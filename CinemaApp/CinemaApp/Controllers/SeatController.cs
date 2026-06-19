@@ -1,8 +1,8 @@
-﻿
+﻿using CinemaApp.Application.Common.HATEOAS;
+using CinemaApp.Application.DTO.SeatDTO;
 using CinemaApp.Application.DTO.SeatsDTO;
 using CinemaApp.Application.Services.Seats;
 using CinemaApp.Domain.Entities;
-using CinemaApp.Services.Seats;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,14 +20,33 @@ namespace CinemaApp.Controllers
             _service = service;
         }
 
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var seats = await _service.GetAll();
 
-            return Ok(seats);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Seat";
+
+
+            var result = seats.Select(s => new SeatDTOResponse
+            {
+                Id = s.Id,
+                Row = s.Row,
+                Number = s.Number,
+
+                Links = SeatLinkBuilder.Build(
+                    s,
+                    baseUrl,
+                    User)
+            });
+
+
+            return Ok(result);
         }
+
+
 
         [AllowAnonymous]
         [HttpGet("{id}")]
@@ -38,8 +57,26 @@ namespace CinemaApp.Controllers
             if (seat == null)
                 return NotFound();
 
-            return Ok(seat);
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Seat";
+
+
+            var result = new SeatDTOResponse
+            {
+                Id = seat.Id,
+                Row = seat.Row,
+                Number = seat.Number,
+
+                Links = SeatLinkBuilder.Build(
+                    seat,
+                    baseUrl,
+                    User)
+            };
+
+
+            return Ok(result);
         }
+
 
 
         [Authorize(Roles = "ADMIN")]
@@ -60,12 +97,29 @@ namespace CinemaApp.Controllers
                 return BadRequest("Seat already exists");
 
 
-            return Ok(result);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Seat";
+
+
+            return Ok(new SeatDTOResponse
+            {
+                Id = result.Id,
+                Row = result.Row,
+                Number = result.Number,
+
+                Links = SeatLinkBuilder.Build(
+                    result,
+                    baseUrl,
+                    User)
+            });
         }
+
+
 
         [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id,UpdateSeatDTO dto)
+        public async Task<IActionResult> Update(
+            int id,
+            UpdateSeatDTO dto)
         {
             var seat = new Seat
             {
@@ -81,8 +135,23 @@ namespace CinemaApp.Controllers
                 return NotFound();
 
 
-            return Ok(result);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Seat";
+
+
+            return Ok(new SeatDTOResponse
+            {
+                Id = result.Id,
+                Row = result.Row,
+                Number = result.Number,
+
+                Links = SeatLinkBuilder.Build(
+                    result,
+                    baseUrl,
+                    User)
+            });
         }
+
+
 
         [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
@@ -97,6 +166,5 @@ namespace CinemaApp.Controllers
 
             return NoContent();
         }
-
     }
 }

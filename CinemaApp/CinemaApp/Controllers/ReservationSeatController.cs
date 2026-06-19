@@ -1,14 +1,12 @@
-﻿
+﻿using CinemaApp.Application.Common.HATEOAS;
 using CinemaApp.Application.DTO.ReservationsDTO.ReservationSeatDTO;
 using CinemaApp.Application.Services.ReservationSeats;
 using CinemaApp.Domain.Entities;
-using CinemaApp.Services.ReservationSeats;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
 {
-    [Authorize(Roles = "ADMIN")]
     [ApiController]
     [Route("api/[controller]")]
     public class ReservationSeatController : ControllerBase
@@ -16,49 +14,67 @@ namespace CinemaApp.Controllers
         private readonly IReservationSeatService _reservationSeatService;
 
 
-        public ReservationSeatController(IReservationSeatService reservationSeatService)
+        public ReservationSeatController(
+            IReservationSeatService reservationSeatService)
         {
             _reservationSeatService = reservationSeatService;
         }
 
 
 
+        [Authorize(Roles = "ADMIN,CONSUMER")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var seats = await _reservationSeatService.GetAll();
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/ReservationSeat";
 
 
             return Ok(seats.Select(s => new ReservationSeatDTOResponse
             {
                 Id = s.Id,
                 ReservationId = s.ReservationId,
-                SeatNumber = s.SeatNumber
+                SeatNumber = s.SeatNumber,
+
+                Links = ReservationSeatLinkBuilder.Build(
+                    s,
+                    baseUrl,
+                    User)
             }));
         }
 
 
 
+        [Authorize(Roles = "ADMIN,CONSUMER")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var seat = await _reservationSeatService.GetById(id);
 
-
             if (seat == null)
                 return NotFound();
+
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/ReservationSeat";
 
 
             return Ok(new ReservationSeatDTOResponse
             {
                 Id = seat.Id,
                 ReservationId = seat.ReservationId,
-                SeatNumber = seat.SeatNumber
+                SeatNumber = seat.SeatNumber,
+
+                Links = ReservationSeatLinkBuilder.Build(
+                    seat,
+                    baseUrl,
+                    User)
             });
         }
 
 
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateReservationSeatDTO dto)
         {
@@ -68,26 +84,36 @@ namespace CinemaApp.Controllers
                 SeatNumber = dto.SeatNumber
             };
 
-             
-            var created = await _reservationSeatService.Create(seat);
 
+            var created = await _reservationSeatService.Create(seat);
 
             if (created == null)
                 return BadRequest();
+
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/ReservationSeat";
 
 
             return Ok(new ReservationSeatDTOResponse
             {
                 Id = created.Id,
                 ReservationId = created.ReservationId,
-                SeatNumber = created.SeatNumber
+                SeatNumber = created.SeatNumber,
+
+                Links = ReservationSeatLinkBuilder.Build(
+                    created,
+                    baseUrl,
+                    User)
             });
         }
 
 
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateReservationSeatDTO dto)
+        public async Task<IActionResult> Update(
+            int id,
+            UpdateReservationSeatDTO dto)
         {
             var seat = new ReservationSeat
             {
@@ -99,30 +125,36 @@ namespace CinemaApp.Controllers
 
             var updated = await _reservationSeatService.Update(id, seat);
 
-
             if (updated == null)
                 return NotFound();
+
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/ReservationSeat";
 
 
             return Ok(new ReservationSeatDTOResponse
             {
                 Id = updated.Id,
                 ReservationId = updated.ReservationId,
-                SeatNumber = updated.SeatNumber
+                SeatNumber = updated.SeatNumber,
+
+                Links = ReservationSeatLinkBuilder.Build(
+                    updated,
+                    baseUrl,
+                    User)
             });
         }
 
 
 
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _reservationSeatService.Delete(id);
 
-
             if (!result)
                 return NotFound();
-
 
             return NoContent();
         }

@@ -1,4 +1,5 @@
-﻿using CinemaApp.Domain.Enums;
+﻿using CinemaApp.Application.Common.HATEOAS;
+using CinemaApp.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace CinemaApp.Application.DTO.UsersDTO
@@ -24,5 +25,6 @@ namespace CinemaApp.Application.DTO.UsersDTO
         public bool IsVerified { get; set; } = false;
 
         public bool IsBlocked { get; set; } = false;
+        public List<Link> Links { get; set; }
     }
 }

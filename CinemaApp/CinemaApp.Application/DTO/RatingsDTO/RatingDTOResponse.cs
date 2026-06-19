@@ -1,6 +1,7 @@
 ﻿using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
 using CinemaApp.Application.DTO.UsersDTO;
 using System.ComponentModel.DataAnnotations;
+using CinemaApp.Application.Common.HATEOAS;
 
 namespace CinemaApp.Application.DTO.RatingsDTO
 {
@@ -25,5 +26,6 @@ namespace CinemaApp.Application.DTO.RatingsDTO
 
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public List<Link> Links { get; set; }
     }
 }

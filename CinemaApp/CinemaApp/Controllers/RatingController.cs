@@ -1,10 +1,9 @@
-﻿using CinemaApp.Application.DTO.RatingsDTO;
+﻿using CinemaApp.Application.Common.HATEOAS;
+using CinemaApp.Application.DTO.RatingsDTO;
 using CinemaApp.Application.DTO.UsersDTO;
 using CinemaApp.Application.Services.Ratings;
 using CinemaApp.Domain.Entities;
 using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
-
-using CinemaApp.Services.Ratings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,11 +22,14 @@ namespace CinemaApp.Controllers
         }
 
 
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var ratings = await _ratingService.GetAll();
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Rating";
 
 
             return Ok(ratings.Select(r => new RatingDTOResponse
@@ -42,6 +44,7 @@ namespace CinemaApp.Controllers
 
                 CreatedAt = r.CreatedAt,
 
+
                 User = new UserDTOResponse
                 {
                     Id = r.User.Id,
@@ -52,6 +55,7 @@ namespace CinemaApp.Controllers
                     Role = r.User.Role
                 },
 
+
                 Movie = new MovieDTOResponse
                 {
                     Id = r.Movie.Id,
@@ -59,10 +63,18 @@ namespace CinemaApp.Controllers
                     OriginalName = r.Movie.OriginalName,
                     Duration = r.Movie.Duration,
                     PosterUrl = r.Movie.PosterUrl
-                }
+                },
+
+
+                Links = RatingLinkBuilder.Build(
+                    r,
+                    baseUrl,
+                    User)
 
             }));
         }
+
+
 
 
         [AllowAnonymous]
@@ -76,16 +88,31 @@ namespace CinemaApp.Controllers
                 return NotFound();
 
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Rating";
+
 
             return Ok(new RatingDTOResponse
             {
                 Id = rating.Id,
+
                 UserId = rating.UserId,
+
                 MovieId = rating.MovieId,
+
                 Stars = rating.Stars,
-                CreatedAt = rating.CreatedAt
+
+                CreatedAt = rating.CreatedAt,
+
+
+                Links = RatingLinkBuilder.Build(
+                    rating,
+                    baseUrl,
+                    User)
+
             });
         }
+
+
 
 
         [Authorize(Roles = "CONSUMER,ADMIN")]
@@ -98,7 +125,7 @@ namespace CinemaApp.Controllers
                 MovieId = dto.MovieId,
                 Stars = dto.Stars,
 
-                // privremeno
+                // TODO: zameniti sa CurrentUserService
                 UserId = 1
             };
 
@@ -111,12 +138,35 @@ namespace CinemaApp.Controllers
 
 
 
-            return Ok(created);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Rating";
+
+
+            return Ok(new RatingDTOResponse
+            {
+                Id = created.Id,
+
+                UserId = created.UserId,
+
+                MovieId = created.MovieId,
+
+                Stars = created.Stars,
+
+                CreatedAt = created.CreatedAt,
+
+
+                Links = RatingLinkBuilder.Build(
+                    created,
+                    baseUrl,
+                    User)
+
+            });
         }
 
 
 
-        [Authorize]
+
+
+        [Authorize(Roles = "CONSUMER,ADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(
             int id,
@@ -139,8 +189,31 @@ namespace CinemaApp.Controllers
 
 
 
-            return Ok(updated);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Rating";
+
+
+            return Ok(new RatingDTOResponse
+            {
+                Id = updated.Id,
+
+                UserId = updated.UserId,
+
+                MovieId = updated.MovieId,
+
+                Stars = updated.Stars,
+
+                CreatedAt = updated.CreatedAt,
+
+
+                Links = RatingLinkBuilder.Build(
+                    updated,
+                    baseUrl,
+                    User)
+
+            });
         }
+
+
 
 
 

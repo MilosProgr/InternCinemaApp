@@ -1,10 +1,13 @@
-﻿using CinemaApp.Domain.Entities;
+﻿using CinemaApp.Application.Common.Models;
+using CinemaApp.Domain.Entities;
 
 namespace CinemaApp.Application.Services.ReservationSeats
 {
     public interface IReservationSeatService
     {
         Task<List<ReservationSeat>> GetAll();
+
+        Task<PagedResult<ReservationSeat>> GetPaged(int page, int pageSize);
 
         Task<ReservationSeat?> GetById(int id);
 

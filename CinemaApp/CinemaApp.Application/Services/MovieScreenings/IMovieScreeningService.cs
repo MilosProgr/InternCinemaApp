@@ -1,10 +1,13 @@
-﻿using CinemaApp.Domain.Entities;
+﻿using CinemaApp.Application.Common.Models;
+using CinemaApp.Domain.Entities;
 
 namespace CinemaApp.Application.Services.MovieScreenings
 {
     public interface IMovieScreeningService
     {
         Task<List<MovieScreening>> GetAll();
+
+        Task<PagedResult<MovieScreening>> GetPaged(int page, int pageSize);
 
         Task<MovieScreening?> GetById(int id);
 

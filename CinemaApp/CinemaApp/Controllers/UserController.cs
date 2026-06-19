@@ -1,4 +1,4 @@
-﻿
+﻿using CinemaApp.Application.Common.HATEOAS;
 using CinemaApp.Application.DTO.UsersDTO;
 using CinemaApp.Application.Services.Users;
 using CinemaApp.Domain.Entities;
@@ -28,6 +28,9 @@ namespace CinemaApp.Controllers
         {
             var users = await _userService.GetAll();
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/User";
+
+
             return Ok(users.Select(u => new UserDTOResponse
             {
                 Id = u.Id,
@@ -35,7 +38,12 @@ namespace CinemaApp.Controllers
                 LastName = u.LastName,
                 Username = u.Username,
                 Email = u.Email,
-                Role = u.Role
+                Role = u.Role,
+
+                Links = UserLinkBuilder.Build(
+                    u,
+                    baseUrl,
+                    User)
             }));
         }
 
@@ -50,6 +58,9 @@ namespace CinemaApp.Controllers
                 return NotFound();
 
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/User";
+
+
             return Ok(new UserDTOResponse
             {
                 Id = user.Id,
@@ -57,7 +68,12 @@ namespace CinemaApp.Controllers
                 LastName = user.LastName,
                 Username = user.Username,
                 Email = user.Email,
-                Role = user.Role
+                Role = user.Role,
+
+                Links = UserLinkBuilder.Build(
+                    user,
+                    baseUrl,
+                    User)
             });
         }
 
@@ -74,8 +90,6 @@ namespace CinemaApp.Controllers
                 Email = dto.Email,
                 DateOfBirth = dto.DateOfBirth,
                 Role = dto.Role,
-
-                // privremeno
                 PasswordHash = dto.Password
             };
 
@@ -87,6 +101,9 @@ namespace CinemaApp.Controllers
                 return BadRequest();
 
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/User";
+
+
             return Ok(new UserDTOResponse
             {
                 Id = created.Id,
@@ -94,12 +111,21 @@ namespace CinemaApp.Controllers
                 LastName = created.LastName,
                 Username = created.Username,
                 Email = created.Email,
-                Role = created.Role
+                Role = created.Role,
+
+                Links = UserLinkBuilder.Build(
+                    created,
+                    baseUrl,
+                    User)
             });
         }
 
+
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateUserDTO dto)
+        public async Task<IActionResult> Update(
+            int id,
+            UpdateUserDTO dto)
         {
             var user = new User
             {
@@ -112,25 +138,31 @@ namespace CinemaApp.Controllers
                 Role = dto.Role,
                 IsVerified = dto.isVerified,
                 IsBlocked = dto.IsBlocked
-                // privremeno
-                //PasswordHash = dto.Password
             };
-            var result = await _userService.Update(id,user);
+
+
+            var result = await _userService.Update(id, user);
+
 
             if (result == null)
                 return NotFound();
 
+
             return Ok(result);
         }
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _userService.Delete(id);
+
             if (!result)
                 return NotFound();
+
+
             return NoContent();
         }
-
     }
 }

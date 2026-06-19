@@ -1,4 +1,5 @@
 ﻿
+using CinemaApp.Application.Common.HATEOAS;
 using CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO;
 
 namespace CinemaApp.Application.DTO.ReservationsDTO.ReservationSeatDTO
@@ -15,5 +16,6 @@ namespace CinemaApp.Application.DTO.ReservationsDTO.ReservationSeatDTO
 
 
         public string SeatNumber { get; set; } = string.Empty;
+        public List<Link> Links { get; set; }
     }
 }

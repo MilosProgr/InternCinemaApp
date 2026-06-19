@@ -1,4 +1,5 @@
 ﻿
+using CinemaApp.Application.Common.Models;
 using CinemaApp.Domain.Entities;
 
 namespace CinemaApp.Application.Services.Users
@@ -6,6 +7,8 @@ namespace CinemaApp.Application.Services.Users
     public interface IUserService
     {
         Task<List<User>> GetAll();
+
+        Task<PagedResult<User>> GetPaged(int page, int pageSize);
 
         Task<User?> GetById(int id);
 

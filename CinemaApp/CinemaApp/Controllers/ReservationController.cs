@@ -1,8 +1,7 @@
-﻿
+﻿using CinemaApp.Application.Common.HATEOAS;
 using CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO;
 using CinemaApp.Application.Services.Reservations;
 using CinemaApp.Domain.Entities;
-using CinemaApp.Services.Reservations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +26,8 @@ namespace CinemaApp.Controllers
         {
             var reservations = await _reservationService.GetAll();
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Reservation";
+
 
             return Ok(reservations.Select(r => new ReservationDTOResponse
             {
@@ -44,9 +45,15 @@ namespace CinemaApp.Controllers
 
                 CreatedAt = r.CreatedAt,
 
-                IsCancelled = r.IsCancelled
+                IsCancelled = r.IsCancelled,
+
+                Links = ReservationLinkBuilder.Build(
+                    r,
+                    baseUrl,
+                    User)
             }));
         }
+
 
 
 
@@ -61,6 +68,8 @@ namespace CinemaApp.Controllers
             if (reservation == null)
                 return NotFound();
 
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Reservation";
 
 
             return Ok(new ReservationDTOResponse
@@ -79,7 +88,12 @@ namespace CinemaApp.Controllers
 
                 CreatedAt = reservation.CreatedAt,
 
-                IsCancelled = reservation.IsCancelled
+                IsCancelled = reservation.IsCancelled,
+
+                Links = ReservationLinkBuilder.Build(
+                    reservation,
+                    baseUrl,
+                    User)
             });
         }
 
@@ -115,9 +129,14 @@ namespace CinemaApp.Controllers
 
 
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Reservation";
+
+
             return Ok(new ReservationDTOResponse
             {
                 Id = created.Id,
+
+                UserId = created.UserId,
 
                 GuestEmail = created.GuestEmail,
 
@@ -129,7 +148,12 @@ namespace CinemaApp.Controllers
 
                 CreatedAt = created.CreatedAt,
 
-                IsCancelled = created.IsCancelled
+                IsCancelled = created.IsCancelled,
+
+                Links = ReservationLinkBuilder.Build(
+                    created,
+                    baseUrl,
+                    User)
             });
         }
 
@@ -138,14 +162,16 @@ namespace CinemaApp.Controllers
 
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateReservationDTO dto)
-        {
 
+        [Authorize(Roles = "ADMIN")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(
+            int id,
+            UpdateReservationDTO dto)
+        {
             var reservation = new Reservation
             {
                 Id = id,
-
 
                 IsCancelled = dto.IsCancelled
             };
@@ -160,9 +186,14 @@ namespace CinemaApp.Controllers
 
 
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Reservation";
+
+
             return Ok(new ReservationDTOResponse
             {
                 Id = result.Id,
+
+                UserId = result.UserId,
 
                 GuestEmail = result.GuestEmail,
 
@@ -174,7 +205,12 @@ namespace CinemaApp.Controllers
 
                 CreatedAt = result.CreatedAt,
 
-                IsCancelled = result.IsCancelled
+                IsCancelled = result.IsCancelled,
+
+                Links = ReservationLinkBuilder.Build(
+                    result,
+                    baseUrl,
+                    User)
             });
         }
 
@@ -183,7 +219,8 @@ namespace CinemaApp.Controllers
 
 
 
-        [Authorize]
+
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

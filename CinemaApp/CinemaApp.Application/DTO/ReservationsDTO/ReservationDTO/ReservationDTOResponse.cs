@@ -1,4 +1,5 @@
 ﻿
+using CinemaApp.Application.Common.HATEOAS;
 using CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO;
 using CinemaApp.Application.DTO.UsersDTO;
 using System.ComponentModel.DataAnnotations;
@@ -31,5 +32,6 @@ namespace CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO
 
 
         public bool IsCancelled { get; set; }
+        public List<Link> Links { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using CinemaApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using CinemaApp.Application.Services.Ratings;
+using CinemaApp.Application.Common.Models;
 
 namespace CinemaApp.Services.Ratings
 {
@@ -83,6 +84,23 @@ namespace CinemaApp.Services.Ratings
 
 
             return true;
+        }
+
+        public async Task<PagedResult<Rating>> GetPaged(int page, int pageSize)
+        {
+            var total = await _context.Ratings.CountAsync();
+            var items = await _context.Ratings
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Rating>
+            {
+                Items = items,
+                TotalCount = total,
+                Page = page,
+                PageSize = pageSize
+            };
         }
     }
 }

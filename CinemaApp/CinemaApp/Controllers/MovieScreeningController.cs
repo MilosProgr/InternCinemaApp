@@ -1,9 +1,10 @@
-﻿using CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO;
+﻿using CinemaApp.Application.Common.HATEOAS;
+using CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO;
+using CinemaApp.Application.Services.MovieScreenings;
 using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
 using CinemaApp.Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
-using CinemaApp.Application.Services.MovieScreenings;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Controllers
 {
@@ -14,12 +15,10 @@ namespace CinemaApp.Controllers
     {
         private readonly IMovieScreeningService _movieScreeningService;
 
-
         public MovieScreeningController(IMovieScreeningService movieScreeningService)
         {
             _movieScreeningService = movieScreeningService;
         }
-
 
 
         [HttpGet]
@@ -27,11 +26,14 @@ namespace CinemaApp.Controllers
         {
             var screenings = await _movieScreeningService.GetAll();
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/MovieScreening";
+
 
             return Ok(screenings.Select(x => new MovieScreeningDTOResponse
             {
                 Id = x.Id,
                 MovieId = x.MovieId,
+
                 Movie = x.Movie == null ? null : new MovieDTOResponse
                 {
                     Id = x.Movie.Id,
@@ -41,9 +43,15 @@ namespace CinemaApp.Controllers
                     PosterUrl = x.Movie.PosterUrl,
                     GenreId = x.Movie.GenreId
                 },
+
                 StartTime = x.StartTime,
                 TicketPrice = x.TicketPrice,
-                AvailableSeats = x.AvailableSeats
+                AvailableSeats = x.AvailableSeats,
+
+                Links = MovieScreeningLinkBuilder.Build(
+                    x,
+                    baseUrl,
+                    User)
             }));
         }
 
@@ -54,15 +62,18 @@ namespace CinemaApp.Controllers
         {
             var screening = await _movieScreeningService.GetById(id);
 
-
             if (screening == null)
                 return NotFound();
+
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/MovieScreening";
 
 
             return Ok(new MovieScreeningDTOResponse
             {
                 Id = screening.Id,
                 MovieId = screening.MovieId,
+
                 Movie = screening.Movie == null ? null : new MovieDTOResponse
                 {
                     Id = screening.Movie.Id,
@@ -72,14 +83,21 @@ namespace CinemaApp.Controllers
                     PosterUrl = screening.Movie.PosterUrl,
                     GenreId = screening.Movie.GenreId
                 },
+
                 StartTime = screening.StartTime,
                 TicketPrice = screening.TicketPrice,
-                AvailableSeats = screening.AvailableSeats
+                AvailableSeats = screening.AvailableSeats,
+
+                Links = MovieScreeningLinkBuilder.Build(
+                    screening,
+                    baseUrl,
+                    User)
             });
         }
 
 
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateMovieScreeningDTO dto)
         {
@@ -99,20 +117,31 @@ namespace CinemaApp.Controllers
                 return BadRequest();
 
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/MovieScreening";
+
+
             return Ok(new MovieScreeningDTOResponse
             {
                 Id = created.Id,
                 MovieId = created.MovieId,
                 StartTime = created.StartTime,
                 TicketPrice = created.TicketPrice,
-                AvailableSeats = created.AvailableSeats
+                AvailableSeats = created.AvailableSeats,
+
+                Links = MovieScreeningLinkBuilder.Build(
+                    created,
+                    baseUrl,
+                    User)
             });
         }
 
 
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateMovieScreeningDTO dto)
+        public async Task<IActionResult> Update(
+            int id,
+            UpdateMovieScreeningDTO dto)
         {
             var screening = new MovieScreening
             {
@@ -131,18 +160,27 @@ namespace CinemaApp.Controllers
                 return NotFound();
 
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/MovieScreening";
+
+
             return Ok(new MovieScreeningDTOResponse
             {
                 Id = updated.Id,
                 MovieId = updated.MovieId,
                 StartTime = updated.StartTime,
                 TicketPrice = updated.TicketPrice,
-                AvailableSeats = updated.AvailableSeats
+                AvailableSeats = updated.AvailableSeats,
+
+                Links = MovieScreeningLinkBuilder.Build(
+                    updated,
+                    baseUrl,
+                    User)
             });
         }
 
 
 
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
