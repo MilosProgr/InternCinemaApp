@@ -20,6 +20,7 @@
         public int AvailableSeats { get; set; }
 
 
+        public ICollection<ScreeningSeat> Seats { get; set; } = new List<ScreeningSeat>();
 
         public ICollection<Reservation> Reservations { get; set; }
             = new List<Reservation>();

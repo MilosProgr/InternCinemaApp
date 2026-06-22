@@ -36,6 +36,23 @@ namespace CinemaApp.Services.Ratings
 
         public async Task<Rating?> Create(Rating rating)
         {
+            // Proveri da li već postoji ocena za ovaj film od ovog korisnika
+            var exists = await _context.Ratings
+                .AnyAsync(r => r.UserId == rating.UserId && r.MovieId == rating.MovieId);
+
+            if (exists)
+                return null; // controller vraća BadRequest
+
+            // U RatingService.Create() — dodaj nakon exists provere:
+            var hasPastReservation = await _context.Reservations
+                .AnyAsync(r => r.UserId == rating.UserId
+                           && r.MovieScreening.MovieId == rating.MovieId
+                           && r.MovieScreening.StartTime < DateTime.UtcNow
+                           && !r.IsCancelled);
+
+            if (!hasPastReservation)
+                return null; // nije gledao film
+
             await _context.Ratings.AddAsync(rating);
 
             await _context.SaveChangesAsync();
@@ -44,24 +61,19 @@ namespace CinemaApp.Services.Ratings
         }
 
 
-        public async Task<Rating?> Update(int id, Rating rating)
+        public async Task<Rating?> Update(int id, int requestingUserId, Rating rating)
         {
             var existingRating = await _context.Ratings
-                .FirstOrDefaultAsync(r => r.Id == id);
+       .FirstOrDefaultAsync(r => r.Id == id);
 
+            if (existingRating == null) return null;
 
-            if (existingRating == null)
-            {
-                return null;
-            }
-
+            // Samo vlasnik ili Admin može menjati
+            if (existingRating.UserId != requestingUserId)
+                return null; // controller vraća Forbid()
 
             existingRating.Stars = rating.Stars;
-
-
             await _context.SaveChangesAsync();
-
-
             return existingRating;
         }
 

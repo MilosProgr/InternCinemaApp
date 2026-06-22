@@ -14,7 +14,7 @@ namespace CinemaApp.Application.Services.Ratings
 
         Task<Rating?> Create(Rating rating);
 
-        Task<Rating?> Update(int id, Rating rating);
+        Task<Rating?> Update(int id, int requestingUserId, Rating rating);
 
         Task<bool> Delete(int id);
     }

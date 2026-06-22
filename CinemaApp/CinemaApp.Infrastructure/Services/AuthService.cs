@@ -9,13 +9,9 @@ using CinemaApp.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CinemaApp.Infrastructure.Services
 {
@@ -23,7 +19,7 @@ namespace CinemaApp.Infrastructure.Services
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _config;
-        //private readonly IEmailService _email;
+        // private readonly IEmailService _email; // odkomentarisati kad se doda email servis
 
         public AuthService(AppDbContext context, IConfiguration config)
         {
@@ -31,19 +27,16 @@ namespace CinemaApp.Infrastructure.Services
             _config = config;
         }
 
-
         public async Task<RegisterResponseDTO> Register(RegisterDTO dto)
         {
-            // 1. provera username/email
+            // 1. Provera da li username ili email već postoje
             var exists = await _context.Users
                 .AnyAsync(x => x.Username == dto.Username || x.Email == dto.Email);
 
-            if (exists) //fix
-            {
-                throw new InvalidOperationException("Username or email already exists");
-            }
+            if (exists)
+                throw new InvalidOperationException("Username or email already exists.");
 
-            // 2. kreiranje usera
+            // 2. Kreiranje korisnika
             var user = new User
             {
                 FirstName = dto.FirstName,
@@ -51,14 +44,15 @@ namespace CinemaApp.Infrastructure.Services
                 Username = dto.Username,
                 Email = dto.Email,
                 Role = Role.CONSUMER,
-                IsVerified = true,
+                IsVerified = false,   // čeka verifikaciju emailom
                 IsBlocked = false,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
+            // TODO: ovde pošalji verification email kad se doda IEmailService
 
             return new RegisterResponseDTO
             {
@@ -72,23 +66,29 @@ namespace CinemaApp.Infrastructure.Services
 
         public async Task<LoginResponseDTO> Login(LoginDTO dto)
         {
-            // 1. find user
+            // 1. Pronađi korisnika po username-u ili emailu
             var user = await _context.Users
-                .FirstOrDefaultAsync(x => x.Username == dto.Username);
+                .FirstOrDefaultAsync(x => x.Username == dto.Username
+                                       || x.Email == dto.Username);
+            // dto.Username može biti i email — korisnik može da se loguje sa oba
 
             if (user == null)
-                //throw new Exception("Invalid credentials");
                 return null;
 
-
-            // 2. verify password
+            // 2. Proveri lozinku
             var isValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
-
             if (!isValid)
-                //throw new Exception("Invalid credentials");
                 return null;
 
-            // 3. generate JWT
+            // 3. Proveri verifikaciju
+            if (!user.IsVerified)
+                throw new InvalidOperationException("Account not verified. Please check your email.");
+
+            // 4. Proveri blokiranost
+            if (user.IsBlocked)
+                throw new InvalidOperationException("Your account has been blocked.");
+
+            // 5. Generiši JWT
             var token = GenerateJwtToken(user);
 
             return new LoginResponseDTO
@@ -129,80 +129,62 @@ namespace CinemaApp.Infrastructure.Services
 
         public async Task ForgotPassword(ForgotPasswordDTO dto)
         {
-            //var user = await _context.Users
-            //    .FirstOrDefaultAsync(x => x.Email == dto.Email);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-            //if (user == null)
-            //    return;
+            if (user == null)
+                return; // ne otkrivamo da li email postoji — sigurnosna praksa
 
-            //var token = Guid.NewGuid().ToString();
+            var token = Guid.NewGuid().ToString();
 
-            //_context.PasswordResetTokens.Add(new PasswordResetToken
-            //{
-            //    UserId = user.Id,
-            //    Token = token,
-            //    ExpiresAt = DateTime.UtcNow.AddHours(1),
-            //    IsUsed = false
-            //});
+            _context.PasswordResetTokens.Add(new PasswordResetToken
+            {
+                UserId = user.Id,
+                Token = token,
+                ExpiresAt = DateTime.UtcNow.AddHours(1),
+                IsUsed = false
+            });
 
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            //var resetLink = $"http://localhost:3000/reset-password.html?token={token}";
-
-            //var body = $@"
-            //    <h3>Password Reset</h3>
-            //    <p>Klikni na link da resetuješ password:</p>
-            //    <a href='{resetLink}'>Reset Password</a>
-            //    <p>Ako nisi ti tražio, ignoriši ovaj email.</p>
-            //";
-
-            //await _email.SendEmailAsync(
-            //    user.Email,
-            //    "Reset Password Request",
-            //    body
-            //);
+            // TODO: odkomentarisati kad se doda IEmailService
+            // var resetLink = $"http://localhost:3000/reset-password.html?token={token}";
+            // await _email.SendEmailAsync(user.Email, "Reset Password", $"<a href='{resetLink}'>Reset</a>");
         }
 
         public async Task ResetPassword(ResetPasswordDTO dto)
         {
-            //var reset = await _context.PasswordResetTokens
-            //    .Include(x => x.User)
-            //    .FirstOrDefaultAsync(x =>
-            //        x.Token == dto.Token &&
-            //        !x.IsUsed);
+            var reset = await _context.PasswordResetTokens
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Token == dto.Token && !x.IsUsed);
 
-            //if (reset == null)
-            //    throw new Exception("Invalid token");
+            if (reset == null)
+                throw new InvalidOperationException("Invalid token.");
 
-            //if (reset.ExpiresAt < DateTime.UtcNow)
-            //    throw new Exception("Token expired");
+            if (reset.ExpiresAt < DateTime.UtcNow)
+                throw new InvalidOperationException("Token has expired.");
 
-            //reset.User.PasswordHash =
-            //    BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            reset.User.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            reset.IsUsed = true;
 
-            //reset.IsUsed = true;
-
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task ChangePassword(int userId, ChangePasswordDTO dto)
         {
-            //var user = await _context.Users.FindAsync(userId);
+            var user = await _context.Users.FindAsync(userId);
 
-            //if (user == null)
-            //    throw new Exception("User not found");
+            if (user == null)
+                throw new InvalidOperationException("User not found.");
 
-            //var isValid = BCrypt.Net.BCrypt.Verify(
-            //    dto.CurrentPassword,
-            //    user.PasswordHash);
+            var isValid = BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash);
 
-            //if (!isValid)
-            //    throw new Exception("Current password incorrect");
+            if (!isValid)
+                throw new InvalidOperationException("Current password is incorrect.");
 
-            //user.PasswordHash =
-            //    BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
 
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

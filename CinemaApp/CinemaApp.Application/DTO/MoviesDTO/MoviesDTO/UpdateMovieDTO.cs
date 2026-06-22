@@ -17,7 +17,7 @@ namespace CinemaApp.Models.DTO.MoviesDTO.MoviesDTO
 
         public string PosterUrl { get; set; } = string.Empty;
 
-        [Required]
-        public int GenreId { get; set; }
+        public List<int> GenreIds { get; set; } = new List<int>(); // multi-select
+
     }
 }

@@ -21,10 +21,7 @@ namespace CinemaApp.Domain.Entities
         public string PosterUrl { get; set; } = string.Empty;
 
 
-        public int GenreId { get; set; }
-
-        public Genre? Genre { get; set; } = null!;
-
+        public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
 
 
         public ICollection<MovieScreening> Screenings { get; set; }

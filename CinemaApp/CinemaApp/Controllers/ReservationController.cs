@@ -4,6 +4,7 @@ using CinemaApp.Application.Services.Reservations;
 using CinemaApp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CinemaApp.Controllers
 {
@@ -135,58 +136,30 @@ namespace CinemaApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateReservationDTO dto)
         {
+            // Uzmi UserId iz tokena ako je ulogovan
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int? userId = userIdClaim != null ? int.Parse(userIdClaim) : null;
+
+            // Gost mora da ima email
+            if (userId == null && string.IsNullOrEmpty(dto.GuestEmail))
+                return BadRequest("Gosti moraju uneti email.");
+
             var reservation = new Reservation
             {
-                GuestEmail = dto.GuestEmail,
-
+                UserId = userId,
+                GuestEmail = userId == null ? dto.GuestEmail : null,
                 MovieScreeningId = dto.MovieScreeningId,
-
-                TotalPrice = 0,
-
-                ReservationCode = Guid.NewGuid().ToString(),
-
-                CreatedAt = DateTime.UtcNow,
-
-                IsCancelled = false
             };
 
-
-            var created = await _reservationService.Create(reservation);
-
+            var created = await _reservationService.Create(reservation, dto.SeatIds);
 
             if (created == null)
-                return BadRequest();
-
-
+                return BadRequest("Rezervacija nije uspela. Sedišta su možda zauzeta.");
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Reservation";
 
-
-            return Ok(new ReservationDTOResponse
-            {
-                Id = created.Id,
-
-                UserId = created.UserId,
-
-                GuestEmail = created.GuestEmail,
-
-                MovieScreeningId = created.MovieScreeningId,
-
-                ReservationCode = created.ReservationCode,
-
-                TotalPrice = created.TotalPrice,
-
-                CreatedAt = created.CreatedAt,
-
-                IsCancelled = created.IsCancelled,
-
-                Links = ReservationLinkBuilder.Build(
-                    created,
-                    baseUrl,
-                    User)
-            });
+            return Ok(MapToResponse(created, baseUrl));
         }
-
 
 
 
@@ -244,6 +217,24 @@ namespace CinemaApp.Controllers
             });
         }
 
+        // Korisnik ili admin može otkazati
+        [Authorize]
+        [HttpPatch("{id}/cancel")]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int? userId = userIdClaim != null ? int.Parse(userIdClaim) : null;
+            bool isAdmin = User.IsInRole("ADMIN");
+
+            var result = await _reservationService.Cancel(id, userId, isAdmin);
+
+            if (result == null)
+                return NotFound();
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Reservation";
+            return Ok(MapToResponse(result, baseUrl));
+        }
+
 
 
 
@@ -262,6 +253,28 @@ namespace CinemaApp.Controllers
 
 
             return NoContent();
+        }
+
+        private ReservationDTOResponse MapToResponse(Reservation r, string baseUrl)
+        {
+            return new ReservationDTOResponse
+            {
+                Id = r.Id,
+                UserId = r.UserId,
+                GuestEmail = r.GuestEmail,
+                MovieScreeningId = r.MovieScreeningId,
+                ReservationCode = r.ReservationCode,
+                TotalPrice = r.TotalPrice,
+                CreatedAt = r.CreatedAt,
+                IsCancelled = r.IsCancelled,
+                Seats = r.Seats.Select(s => new ReservationSeatDTO
+                {
+                    Id = s.Id,
+                    Row = s.Row,
+                    Number = s.Number
+                }).ToList(),
+                Links = ReservationLinkBuilder.Build(r, baseUrl, User)
+            };
         }
     }
 }

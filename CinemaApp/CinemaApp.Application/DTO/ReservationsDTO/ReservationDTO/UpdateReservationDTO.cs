@@ -4,8 +4,8 @@ namespace CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO
 {
     public class UpdateReservationDTO
     {
-        [Required]
-        public int Id { get; set; }
+        //[Required]
+        //public int Id { get; set; }
 
         public bool IsCancelled { get; set; }
     }

@@ -9,7 +9,9 @@ namespace CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO
         [Required]
         public int MovieScreeningId { get; set; }
 
+        // ID-evi ScreeningSeat koji su slobodni
         [Required]
-        public List<string> SeatNumbers { get; set; } = new();
+        [MinLength(1, ErrorMessage = "Morate izabrati bar jedno sedište.")]
+        public List<int> SeatIds { get; set; } = new();
     }
 }

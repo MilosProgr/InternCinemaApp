@@ -28,6 +28,7 @@ namespace CinemaApp.Domain.Entities
 
         public bool IsBlocked { get; set; } = false;
 
+        public ICollection<Genre> FavoriteGenres { get; set; } = new List<Genre>();
 
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 

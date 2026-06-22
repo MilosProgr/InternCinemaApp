@@ -35,11 +35,14 @@ namespace CinemaApp.Domain.Entities
 
 
 
-        public bool IsCancelled { get; set; }
+        public bool IsCancelled { get; set; } = false;
+
+        public ICollection<ScreeningSeat> Seats { get; set; } = new List<ScreeningSeat>();
 
 
+        // public ICollection<ReservationSeat> Seats { get; set; }
+        //   = new List<ReservationSeat>();
 
-        public ICollection<ReservationSeat> Seats { get; set; }
-            = new List<ReservationSeat>();
+        // Sedista koja su rezervisana u ovoj rezervaciji
     }
 }

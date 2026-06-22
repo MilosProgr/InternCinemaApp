@@ -25,6 +25,23 @@ namespace CinemaApp.Services.MovieScreenings
             if (!movieExists)
                 return null;
 
+            var duplicate = await _context.MovieScreenings
+                .AnyAsync(x => x.MovieId == movieScreen.MovieId
+                   && x.StartTime == movieScreen.StartTime);
+
+            if (duplicate) return null;
+
+            // Generiši sedišta 7x6
+            var rows = new[] { "A", "B", "C", "D", "E", "F", "G" };
+            foreach (var row in rows)
+                for (int n = 1; n <= 6; n++)
+                    movieScreen.Seats.Add(new ScreeningSeat
+                    {
+                        Row = row,
+                        Number = n,
+                        IsOccupied = false
+                    });
+
 
             await _context.MovieScreenings.AddAsync(movieScreen);
 

@@ -40,25 +40,73 @@ namespace CinemaApp.Services.Reservations
 
 
 
-        public async Task<Reservation?> Create(Reservation reservation)
+        public async Task<Reservation?> Create(Reservation reservation, List<int> seatIds)
         {
-            reservation.CreatedAt = DateTime.UtcNow;
+            // Proveri da li screening postoji
+            var screening = await _context.MovieScreenings
+                .Include(ms => ms.Seats)
+                .FirstOrDefaultAsync(ms => ms.Id == reservation.MovieScreeningId);
 
-            if (string.IsNullOrEmpty(reservation.ReservationCode))
+            if (screening == null) return null;
+
+            // Uzmi tražena sedišta koja su slobodna
+            var seats = screening.Seats
+                .Where(s => seatIds.Contains(s.Id) && !s.IsOccupied)
+                .ToList();
+
+            // Ako nisu sva sedišta slobodna, odbij
+            if (seats.Count != seatIds.Count) return null;
+
+            // Max 5 karata
+            if (seats.Count > 5) return null;
+
+            // Izračunaj cenu
+            decimal discount = reservation.UserId != null ? 0.95m : 1.0m;
+            reservation.TotalPrice = screening.TicketPrice * seats.Count * discount;
+
+            reservation.ReservationCode = Guid.NewGuid().ToString();
+            reservation.CreatedAt = DateTime.UtcNow;
+            reservation.IsCancelled = false;
+
+            // Zauzmi sedišta
+            foreach (var seat in seats)
             {
-                reservation.ReservationCode = Guid.NewGuid().ToString();
+                seat.IsOccupied = true;
+                seat.Reservation = reservation;
             }
 
-
             await _context.Reservations.AddAsync(reservation);
-
             await _context.SaveChangesAsync();
 
             return reservation;
         }
 
+        public async Task<Reservation?> Cancel(int id, int? userId, bool isAdmin)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Seats)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
+            if (reservation == null) return null;
 
+            // Korisnik može otkazati samo svoju rezervaciju
+            if (!isAdmin && reservation.UserId != userId) return null;
+
+            // Ne može se otkazati već otkazana
+            if (reservation.IsCancelled) return null;
+
+            reservation.IsCancelled = true;
+
+            // Oslobodi sedišta
+            foreach (var seat in reservation.Seats)
+            {
+                seat.IsOccupied = false;
+                seat.ReservationId = null;
+            }
+
+            await _context.SaveChangesAsync();
+            return reservation;
+        }
 
         public async Task<Reservation?> Update(int id, Reservation reservation)
         {

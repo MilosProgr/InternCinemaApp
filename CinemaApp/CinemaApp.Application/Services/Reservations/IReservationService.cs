@@ -1,5 +1,6 @@
 ﻿using CinemaApp.Application.Common.Models;
 using CinemaApp.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Application.Services.Reservations
 {
@@ -11,10 +12,13 @@ namespace CinemaApp.Application.Services.Reservations
 
         Task<Reservation?> GetById(int id);
 
-        Task<Reservation?> Create(Reservation reservation);
+        Task<Reservation?> Create(Reservation reservation, List<int> seatIds);
 
         Task<Reservation?> Update(int id, Reservation reservation);
 
         Task<bool> Delete(int id);
+
+        Task<Reservation> Cancel(int id, int? userId, bool isAdmin);
+
     }
 }

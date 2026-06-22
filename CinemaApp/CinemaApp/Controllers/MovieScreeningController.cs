@@ -24,8 +24,8 @@ namespace CinemaApp.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll(
-    [FromQuery] int page = 1,
-    [FromQuery] int pageSize = 10)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
             var paged = await _movieScreeningService.GetPaged(page, pageSize);
 
@@ -76,8 +76,8 @@ namespace CinemaApp.Controllers
                         Name = x.Movie.Name,
                         OriginalName = x.Movie.OriginalName,
                         Duration = x.Movie.Duration,
-                        PosterUrl = x.Movie.PosterUrl,
-                        GenreId = x.Movie.GenreId
+                        PosterUrl = x.Movie.PosterUrl
+                        
                     },
 
                     StartTime = x.StartTime,
@@ -125,7 +125,7 @@ namespace CinemaApp.Controllers
                     OriginalName = screening.Movie.OriginalName,
                     Duration = screening.Movie.Duration,
                     PosterUrl = screening.Movie.PosterUrl,
-                    GenreId = screening.Movie.GenreId
+                    //GenreId = screening.Movie.GenreId
                 },
 
                 StartTime = screening.StartTime,
