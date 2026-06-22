@@ -42,6 +42,7 @@ namespace CinemaApp.Services.Reservations
 
         public async Task<Reservation?> Create(Reservation reservation, List<int> seatIds)
         {
+            seatIds = seatIds.Distinct().ToList();
             // Proveri da li screening postoji
             var screening = await _context.MovieScreenings
                 .Include(ms => ms.Seats)
@@ -141,6 +142,7 @@ namespace CinemaApp.Services.Reservations
         public async Task<bool> Delete(int id)
         {
             var reservation = await _context.Reservations
+                .Include(r => r.Seats)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
 
@@ -148,8 +150,15 @@ namespace CinemaApp.Services.Reservations
                 return false;
 
 
+            foreach (var seat in reservation.Seats)
+            {
+                seat.IsOccupied = false;
+                seat.ReservationId = null;
+            }
+
 
             _context.Reservations.Remove(reservation);
+
 
             await _context.SaveChangesAsync();
 

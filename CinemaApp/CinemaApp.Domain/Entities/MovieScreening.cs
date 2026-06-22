@@ -17,7 +17,7 @@
         public decimal TicketPrice { get; set; }
 
 
-        public int AvailableSeats { get; set; }
+        //public int AvailableSeats { get; set; }
 
 
         public ICollection<ScreeningSeat> Seats { get; set; } = new List<ScreeningSeat>();

@@ -129,6 +129,22 @@ namespace CinemaApp.Infrastructure.Database
             modelBuilder.Entity<PasswordResetToken>()
                 .HasIndex(t => t.Token)
                 .IsUnique();
+
+
+            modelBuilder.Entity<Rating>()
+                .HasIndex(x => new
+                {
+                    x.UserId,
+                    x.MovieId
+                })
+                .IsUnique();
+            modelBuilder.Entity<MovieGenre>()
+                .HasKey(x => new
+                {
+                    x.MovieId,
+                    x.GenreId
+                });
         }
+
     }
 }

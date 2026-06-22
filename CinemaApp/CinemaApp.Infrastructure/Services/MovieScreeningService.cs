@@ -19,29 +19,22 @@ namespace CinemaApp.Services.MovieScreenings
 
         public async Task<MovieScreening?> Create(MovieScreening movieScreen)
         {
-            Console.WriteLine("CREATE SCREENING POZVAN");
             var movieExists = await _context.Movies
                 .AnyAsync(x => x.Id == movieScreen.MovieId);
+
 
             if (!movieExists)
                 return null;
 
+
             var duplicate = await _context.MovieScreenings
-                .AnyAsync(x => x.MovieId == movieScreen.MovieId
-                   && x.StartTime == movieScreen.StartTime);
+                .AnyAsync(x =>
+                    x.MovieId == movieScreen.MovieId &&
+                    x.StartTime == movieScreen.StartTime);
 
-            if (duplicate) return null;
 
-            // Generiši sedišta 7x6
-            var rows = new[] { "A", "B", "C", "D", "E", "F", "G" };
-            foreach (var row in rows)
-                for (int n = 1; n <= 6; n++)
-                    movieScreen.Seats.Add(new ScreeningSeat
-                    {
-                        Row = row,
-                        Number = n,
-                        IsOccupied = false
-                    });
+            if (duplicate)
+                return null;
 
 
             await _context.MovieScreenings.AddAsync(movieScreen);
@@ -49,7 +42,36 @@ namespace CinemaApp.Services.MovieScreenings
             await _context.SaveChangesAsync();
 
 
+            await GenerateSeats(movieScreen.Id);
+
+
             return movieScreen;
+        }
+
+        private async Task GenerateSeats(int screeningId)
+        {
+            var rows = new[]
+            {
+                "A","B","C","D","E","F","G"
+            };
+
+            foreach (var row in rows)
+            {
+                for (int i = 1; i <= 6; i++)
+                {
+                    _context.ScreeningSeats.Add(
+                        new ScreeningSeat
+                        {
+                            MovieScreeningId = screeningId,
+                            Row = row,
+                            Number = i,
+                            IsOccupied = false
+                        });
+                }
+            }
+
+
+            await _context.SaveChangesAsync();
         }
 
 
@@ -191,7 +213,6 @@ namespace CinemaApp.Services.MovieScreenings
             existingScreening.MovieId = movieScreen.MovieId;
             existingScreening.StartTime = movieScreen.StartTime;
             existingScreening.TicketPrice = movieScreen.TicketPrice;
-            existingScreening.AvailableSeats = movieScreen.AvailableSeats;
 
 
             await _context.SaveChangesAsync();

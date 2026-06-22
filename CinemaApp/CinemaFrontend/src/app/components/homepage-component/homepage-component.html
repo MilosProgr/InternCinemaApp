@@ -20,7 +20,7 @@ Svi žanrovi
 
 <option
 *ngFor="let genre of genres"
-[value]="genre.id">
+[ngValue]="genre.id">
 
 {{genre.name}}
 
@@ -68,12 +68,12 @@ class="movie-card"
 
 
 <h2>
-{{item.movie.name}}
+{{item.movie?.name ?? ''}}
 </h2>
 
 
 <p>
-{{item.movie.originalName}}
+{{item.movie?.originalName ?? ''}}
 </p>
 
 

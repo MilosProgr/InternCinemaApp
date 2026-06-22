@@ -106,12 +106,24 @@ namespace CinemaApp.Services.Movies
             var movie = await _context.Movies
                 .FirstOrDefaultAsync(x => x.Id == id);
 
+
             if (movie == null)
                 return false;
 
+
+            bool hasScreenings = await _context.MovieScreenings
+                .AnyAsync(x => x.MovieId == id);
+
+
+            if (hasScreenings)
+                return false;
+
+
             _context.Movies.Remove(movie);
 
+
             await _context.SaveChangesAsync();
+
 
             return true;
         }

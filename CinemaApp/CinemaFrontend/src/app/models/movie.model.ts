@@ -13,7 +13,7 @@ export interface Movie {
 
     posterUrl:string;
 
-    genres: Genre[];  
+    genres?: Genre[];  
 
     averageRating?:number;
 }

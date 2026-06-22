@@ -82,7 +82,6 @@ namespace CinemaApp.Controllers
 
                     StartTime = x.StartTime,
                     TicketPrice = x.TicketPrice,
-                    AvailableSeats = x.AvailableSeats,
 
                     Links = MovieScreeningLinkBuilder.Build(
                         x,
@@ -130,7 +129,6 @@ namespace CinemaApp.Controllers
 
                 StartTime = screening.StartTime,
                 TicketPrice = screening.TicketPrice,
-                AvailableSeats = screening.AvailableSeats,
 
                 Links = MovieScreeningLinkBuilder.Build(
                     screening,
@@ -166,7 +164,6 @@ namespace CinemaApp.Controllers
                 MovieId = dto.MovieId,
                 StartTime = dto.StartTime,
                 TicketPrice = dto.TicketPrice,
-                AvailableSeats = dto.AvailableSeats
             };
 
 
@@ -186,7 +183,6 @@ namespace CinemaApp.Controllers
                 MovieId = created.MovieId,
                 StartTime = created.StartTime,
                 TicketPrice = created.TicketPrice,
-                AvailableSeats = created.AvailableSeats,
 
                 Links = MovieScreeningLinkBuilder.Build(
                     created,
@@ -209,7 +205,6 @@ namespace CinemaApp.Controllers
                 MovieId = dto.MovieId,
                 StartTime = dto.StartTime,
                 TicketPrice = dto.TicketPrice,
-                AvailableSeats = dto.AvailableSeats
             };
 
 
@@ -229,7 +224,6 @@ namespace CinemaApp.Controllers
                 MovieId = updated.MovieId,
                 StartTime = updated.StartTime,
                 TicketPrice = updated.TicketPrice,
-                AvailableSeats = updated.AvailableSeats,
 
                 Links = MovieScreeningLinkBuilder.Build(
                     updated,

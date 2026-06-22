@@ -8,7 +8,7 @@ export interface MovieScreening  {
     
     movieId:number;
 
-    movie:Movie;
+    movie?:Movie | null;
 
     startTime:string;
 

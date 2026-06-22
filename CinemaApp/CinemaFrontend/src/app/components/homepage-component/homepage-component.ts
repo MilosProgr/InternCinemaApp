@@ -132,39 +132,38 @@ export class HomepageComponent implements OnInit {
 
   groupByMovie(screenings: MovieScreening[]){
 
-    const map =
-      new Map<number,
-      {movie:Movie, screenings:MovieScreening[]}>();
+
+    const map = new Map<number,{movie:Movie,screenings:MovieScreening[]}>();
 
 
     screenings.forEach(s=>{
 
+    if(!s.movie)
+      return;
 
-      if(!map.has(s.movieId)){
 
-        map.set(
-          s.movieId,
-          {
-            movie:s.movie,
-            screenings:[]
-          }
-        );
+    if(!map.has(s.movieId)){
 
+      map.set(
+        s.movieId,
+      {
+        movie:s.movie,
+        screenings:[]
       }
+    );
+  }
 
 
-      map.get(s.movieId)!
-          .screenings
-          .push(s);
+    map.get(s.movieId)!
+    .screenings
+    .push(s);
 
 
-    });
-
+  });
 
 
     this.groupedMovies =
-      Array.from(map.values());
-
+    Array.from(map.values());
   }
 
 
