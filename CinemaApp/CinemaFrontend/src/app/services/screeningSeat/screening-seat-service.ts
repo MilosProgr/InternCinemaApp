@@ -1,14 +1,14 @@
 import { Injectable, Service } from '@angular/core';
 import { CrudService } from '../../generics/generic-service';
-import { Seat } from '../../models/seat.model';
+import { ScreeningSeat } from '../../models/screeningSeat';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SeatService extends CrudService<Seat> {
+export class ScreeningSeatService extends CrudService<ScreeningSeat> {
     constructor(private http: HttpClient){
-        super(http, `${environment.baseUrl}/Seat`)
+        super(http, `${environment.baseUrl}/screenings`)
     }
 }

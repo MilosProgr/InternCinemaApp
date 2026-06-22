@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SeatComponent } from './seat-component';
+import { ScreeningSeatComponent } from './screening-seat-component';
 
-describe('SeatComponent', () => {
-  let component: SeatComponent;
-  let fixture: ComponentFixture<SeatComponent>;
+describe('ScreeningSeatComponent', () => {
+  let component: ScreeningSeatComponent;
+  let fixture: ComponentFixture<ScreeningSeatComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SeatComponent],
+      imports: [ScreeningSeatComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SeatComponent);
+    fixture = TestBed.createComponent(ScreeningSeatComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

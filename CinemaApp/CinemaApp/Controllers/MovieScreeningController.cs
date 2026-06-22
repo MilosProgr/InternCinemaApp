@@ -139,6 +139,22 @@ namespace CinemaApp.Controllers
             });
         }
 
+        [HttpGet("upcoming7days")]
+        public async Task<IActionResult> GetUpcoming7Days(
+            int? genreId,
+            DateTime? date,
+            string sortBy = "chronologically")
+        {
+            var result =
+                await _movieScreeningService.GetUpcoming7Days(
+                    genreId,
+                    date,
+                    sortBy
+                );
+
+            return Ok(result);
+        }
+
 
 
         [Authorize(Roles = "ADMIN")]

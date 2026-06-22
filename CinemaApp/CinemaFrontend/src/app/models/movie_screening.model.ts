@@ -10,13 +10,8 @@ export interface MovieScreening  {
 
     movie:Movie;
 
-
     startTime:string;
 
-
     ticketPrice:number;
-
-
-    availableSeats:number;
 
 }

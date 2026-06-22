@@ -1,0 +1,64 @@
+<p>reservation-component works!</p>
+
+
+<!-- <app-generic-table
+  [data]="entities"
+  [columns]="columns"
+  [showActions]="true"
+  [currentPage]="currentPage"
+  [totalPages]="totalPages"
+  [links]="links"
+  (edit)="edit($event)"
+  (delete)="delete($event)"
+  (pageChange)="goToPage($event)">
+</app-generic-table> -->
+
+<div class="screening-details">
+  <p>Movie: {{ screening?.movie?.name }}</p>
+  <p>Date: {{ screening?.startTime | date:'dd.MM.yyyy' }}</p>
+  <p>Time: {{ screening?.startTime | date:'HH:mm' }}</p>
+  <p>Selected: {{ selectedSeats.length }} / {{ MAX_TICKETS }}</p>
+</div>
+
+<!-- Legenda -->
+<div class="legend">
+  <span class="selected">Selected</span>
+  <span class="occupied">Occupied</span>
+  <span class="available">Available</span>
+</div>
+
+<!-- Mreža sedišta -->
+<div class="seat-grid">
+  <div class="row" *ngFor="let row of rows">
+    <span class="row-label">{{ row }}</span>
+    <button
+      *ngFor="let seat of getSeatsForRow(row)"
+      [class]="getSeatClass(seat)"
+      (click)="toggleSeat(seat)">
+      {{ seat.number }}
+    </button>
+  </div>
+</div>
+
+<!-- Cena -->
+<div class="price-section">
+  <p>Ticket price: {{ screening?.ticketPrice }} RSD</p>
+  <p *ngIf="isAuthenticated">5% discount applied</p>
+  <p><strong>Total: {{ totalPrice }} RSD</strong></p>
+</div>
+
+<!-- Email samo za gosta -->
+<div *ngIf="!isAuthenticated">
+  <input [(ngModel)]="guestEmail" placeholder="E-mail address" type="email" />
+</div>
+
+<button (click)="confirm()" [disabled]="selectedSeats.length === 0">
+  Make Reservation
+</button>
+
+<!-- Confirmation dialog -->
+<div class="dialog" *ngIf="showConfirmDialog">
+  <p>Confirm reservation for {{ selectedSeats.length }} seats?</p>
+  <button (click)="makeReservation()">Confirm</button>
+  <button (click)="showConfirmDialog = false">Cancel</button>
+</div>

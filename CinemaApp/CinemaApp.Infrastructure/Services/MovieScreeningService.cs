@@ -19,6 +19,7 @@ namespace CinemaApp.Services.MovieScreenings
 
         public async Task<MovieScreening?> Create(MovieScreening movieScreen)
         {
+            Console.WriteLine("CREATE SCREENING POZVAN");
             var movieExists = await _context.Movies
                 .AnyAsync(x => x.Id == movieScreen.MovieId);
 
@@ -86,6 +87,7 @@ namespace CinemaApp.Services.MovieScreenings
         {
             return await _context.MovieScreenings
                 .Include(x => x.Movie)
+                .Include(x => x.Seats)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
@@ -104,6 +106,76 @@ namespace CinemaApp.Services.MovieScreenings
                 Page = page,
                 PageSize = pageSize
             };
+        }
+
+        public async Task<List<MovieScreening>> GetUpcoming7Days(
+                int? genreId,
+                DateTime? date,
+                string sortBy)
+        {
+            var query = _context.MovieScreenings
+                .Include(x => x.Movie)
+                    .ThenInclude(m => m.MovieGenres)
+                        
+                .AsQueryable();
+
+
+
+            // samo narednih 7 dana
+            var today = DateTime.UtcNow;
+
+            var endDate = today.AddDays(7);
+
+
+            query = query.Where(x =>
+                x.StartTime >= today &&
+                x.StartTime <= endDate
+            );
+
+
+
+            // filter po žanru
+            if (genreId.HasValue)
+            {
+                query = query.Where(x =>
+                    x.Movie.MovieGenres
+                        .Any(mg => mg.GenreId == genreId.Value)
+                );
+            }
+
+
+
+            // filter po datumu
+            if (date.HasValue)
+            {
+                var utcDate = DateTime.SpecifyKind(
+                    date.Value,
+                    DateTimeKind.Utc
+                );
+
+                query = query.Where(x =>
+                    x.StartTime.Date == utcDate.Date
+                );
+            }
+
+
+
+            if (sortBy == "alphabetically")
+            {
+                query = query.OrderBy(x =>
+                    x.Movie.Name
+                );
+            }
+            else
+            {
+                query = query.OrderBy(x =>
+                    x.StartTime
+                );
+            }
+
+
+
+            return await query.ToListAsync();
         }
 
         public async Task<MovieScreening?> Update(int id, MovieScreening movieScreen)

@@ -1,0 +1,128 @@
+<div class="homepage">
+
+
+<h1>
+  Bioskop
+</h1>
+
+
+<div class="filters">
+
+
+<select 
+[(ngModel)]="selectedGenreId"
+(change)="filterChanged()">
+
+<option [ngValue]="null">
+Svi žanrovi
+</option>
+
+
+<option
+*ngFor="let genre of genres"
+[value]="genre.id">
+
+{{genre.name}}
+
+</option>
+
+</select>
+
+
+
+<input 
+type="date"
+[(ngModel)]="selectedDate"
+(change)="filterChanged()"
+>
+
+
+
+<select
+[(ngModel)]="sortBy"
+(change)="filterChanged()">
+
+
+<option value="chronologically">
+Po vremenu
+</option>
+
+
+<option value="alphabetically">
+Po nazivu
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+<div
+class="movie-card"
+*ngFor="let item of groupedMovies">
+
+
+<h2>
+{{item.movie.name}}
+</h2>
+
+
+<p>
+{{item.movie.originalName}}
+</p>
+
+
+
+<div class="days">
+
+
+<div
+*ngFor="let day of next7Days">
+
+
+<h4>
+{{day | date:'EEE dd.MM'}}
+</h4>
+
+
+
+<button
+
+*ngFor="
+let screening of 
+getScreeningsForDay(item.screenings,day)
+"
+
+[disabled]="isPast(screening)"
+
+[routerLink]="
+['/reservation',screening.id]
+">
+
+
+{{screening.startTime | date:'HH:mm'}}
+
+-
+{{screening.ticketPrice}} RSD
+
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>

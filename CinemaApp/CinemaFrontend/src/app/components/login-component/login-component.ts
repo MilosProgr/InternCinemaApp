@@ -47,7 +47,7 @@ export class LoginComponent {
         (res: any) => {
           if (res.token) {
             console.log("Working");
-            this.router.navigate(['/Genre']);
+            this.router.navigate(['/homepage']);
           } else {
             console.log(res.message);
             this.loginFailed = true;

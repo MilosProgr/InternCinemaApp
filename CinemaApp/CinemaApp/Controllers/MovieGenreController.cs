@@ -33,7 +33,7 @@ namespace CinemaApp.Controllers
 
         // POST api/moviegenre
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> AddGenreToMovie([FromBody] MovieGenreCreateDTO dto)
         {
             if (!ModelState.IsValid)
@@ -57,7 +57,7 @@ namespace CinemaApp.Controllers
 
         // PUT api/moviegenre
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> UpdateMovieGenres([FromBody] MovieGenreUpdateDTO dto)
         {
             if (!ModelState.IsValid)
@@ -76,7 +76,7 @@ namespace CinemaApp.Controllers
 
         // DELETE api/moviegenre/movie/3/genre/2
         [HttpDelete("movie/{movieId}/genre/{genreId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> RemoveGenreFromMovie(int movieId, int genreId)
         {
             try

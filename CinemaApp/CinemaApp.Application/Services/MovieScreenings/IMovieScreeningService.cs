@@ -15,6 +15,12 @@ namespace CinemaApp.Application.Services.MovieScreenings
 
         Task<MovieScreening?> Update(int id, MovieScreening movieScreen);
 
+        Task<List<MovieScreening>> GetUpcoming7Days(
+            int? genreId,
+            DateTime? date,
+            string sortBy
+        );
+
         Task<bool> Delete(int id);
     }
 }

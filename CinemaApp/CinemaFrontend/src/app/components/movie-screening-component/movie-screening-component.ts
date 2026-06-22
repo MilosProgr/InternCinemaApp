@@ -25,11 +25,7 @@ export class MovieScreeningComponent extends GenericCrudComponent<MovieScreening
         {
           label: 'Ticket Price',
           key: 'ticketPrice'
-        },
-        {
-          label: 'Available Seats',
-          key: 'availableSeats'
-        },
+        }
       ];
 
       constructor(private movie_screeningService: MovieScreeningService,public router: Router,cdr: ChangeDetectorRef)

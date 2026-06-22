@@ -64,10 +64,17 @@ namespace CinemaApp.Controllers
 
             var result = new
             {
-                items = paged.Items.Select(m => new
+                items = paged.Items.Select(m =>
                 {
-                    Movie = MapToResponse(m),
-                    Links = MovieLinkBuilder.Build(m, baseUrl, User)
+                    var dto = MapToResponse(m);
+
+                    dto.Links = MovieLinkBuilder.Build(
+                        m,
+                        baseUrl,
+                        User
+                    );
+
+                    return dto;
                 }),
                 paged.TotalCount,
                 paged.Page,
@@ -90,11 +97,13 @@ namespace CinemaApp.Controllers
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Movie";
 
-            var result = new
-            {
-                Movie = MapToResponse(movie),
-                Links = MovieLinkBuilder.Build(movie, baseUrl, User)
-            };
+            var result = MapToResponse(movie);
+
+            result.Links = MovieLinkBuilder.Build(
+                movie,
+                baseUrl,
+                User
+            );
 
             return Ok(result);
         }
@@ -121,11 +130,13 @@ namespace CinemaApp.Controllers
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Movie";
 
-            var result = new
-            {
-                Movie = MapToResponse(createdMovie),
-                Links = MovieLinkBuilder.Build(createdMovie, baseUrl, User)
-            };
+            var result = MapToResponse(createdMovie);
+
+            result.Links = MovieLinkBuilder.Build(
+                createdMovie,
+                baseUrl,
+                User
+            );
 
             return CreatedAtAction(nameof(GetById), new { id = createdMovie.Id }, result);
         }
@@ -152,11 +163,13 @@ namespace CinemaApp.Controllers
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}/api/Movie";
 
-            var result = new
-            {
-                Movie = MapToResponse(updatedMovie),
-                Links = MovieLinkBuilder.Build(updatedMovie, baseUrl, User)
-            };
+            var result = MapToResponse(updatedMovie);
+
+            result.Links = MovieLinkBuilder.Build(
+                updatedMovie,
+                baseUrl,
+                User
+            );
 
             return Ok(result);
         }
