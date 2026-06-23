@@ -3,6 +3,7 @@ import { CrudService } from '../../generics/generic-service';
 import { CreateReservationRequest, Reservation } from '../../models/reservation.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,9 @@ export class ReservationService extends CrudService<Reservation> {
         super(http, `${environment.baseUrl}/Reservation`)
     }
 
-      createReservation(
+    
+
+    createReservation(
         request:CreateReservationRequest
     ){
         return this.http.post<Reservation>(
@@ -20,4 +23,15 @@ export class ReservationService extends CrudService<Reservation> {
             request
         );
     }
+
+    getMyReservations(): Observable<Reservation[]> {
+    return this.http.get<Reservation[]>(`${environment.baseUrl}/Reservation/my`);
+    // headers sa tokenom se dodaju automatski preko interceptora
+}
+
+cancel(id: number): Observable<void> {
+    return this.http.patch<void>(`${environment.baseUrl}/Reservation/${id}/cancel`, {});
+}
+
+
 }

@@ -17,35 +17,53 @@ namespace CinemaApp.Services.MovieScreenings
         }
 
 
+        // MovieScreeningService.cs — Create metoda, OBRIŠI ovo na kraju
+        // await GenerateSeats(movieScreen.Id);  ← OBRIŠI
+
         public async Task<MovieScreening?> Create(MovieScreening movieScreen)
         {
             var movieExists = await _context.Movies
                 .AnyAsync(x => x.Id == movieScreen.MovieId);
 
-
             if (!movieExists)
                 return null;
-
 
             var duplicate = await _context.MovieScreenings
                 .AnyAsync(x =>
                     x.MovieId == movieScreen.MovieId &&
                     x.StartTime == movieScreen.StartTime);
 
-
             if (duplicate)
                 return null;
 
-
             await _context.MovieScreenings.AddAsync(movieScreen);
+            await _context.SaveChangesAsync();
+
+            return movieScreen;  // ← samo ovo, bez GenerateSeats
+        }
+
+        // I obriši celu private GenerateSeats metodu iz ovog servisa
+
+        
+
+
+
+        public async Task<bool> Delete(int id)
+        {
+            var screening = await _context.MovieScreenings
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+
+            if (screening == null)
+                return false;
+
+
+            _context.MovieScreenings.Remove(screening);
 
             await _context.SaveChangesAsync();
 
 
-            await GenerateSeats(movieScreen.Id);
-
-
-            return movieScreen;
+            return true;
         }
 
         private async Task GenerateSeats(int screeningId)
@@ -76,26 +94,6 @@ namespace CinemaApp.Services.MovieScreenings
 
 
 
-        public async Task<bool> Delete(int id)
-        {
-            var screening = await _context.MovieScreenings
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-
-            if (screening == null)
-                return false;
-
-
-            _context.MovieScreenings.Remove(screening);
-
-            await _context.SaveChangesAsync();
-
-
-            return true;
-        }
-
-
-
         public async Task<List<MovieScreening>> GetAll()
         {
             return await _context.MovieScreenings
@@ -116,7 +114,11 @@ namespace CinemaApp.Services.MovieScreenings
         public async Task<PagedResult<MovieScreening>> GetPaged(int page, int pageSize)
         {
             var total = await _context.MovieScreenings.CountAsync();
+            // MovieScreeningService.cs — GetPaged
             var items = await _context.MovieScreenings
+                .Include(x => x.Movie)          // ← dodaj
+                    .ThenInclude(m => m.MovieGenres)
+                        .ThenInclude(mg => mg.Genre)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -135,10 +137,13 @@ namespace CinemaApp.Services.MovieScreenings
                 DateTime? date,
                 string sortBy)
         {
+            // MovieScreeningService.cs — GetUpcoming7Days
             var query = _context.MovieScreenings
                 .Include(x => x.Movie)
                     .ThenInclude(m => m.MovieGenres)
-                        
+                        .ThenInclude(mg => mg.Genre)  // ← OVO NEDOSTAJE
+                .Include(x => x.Movie)
+                    .ThenInclude(m => m.Ratings)      // ← za AverageRating
                 .AsQueryable();
 
 
@@ -197,7 +202,11 @@ namespace CinemaApp.Services.MovieScreenings
 
 
 
-            return await query.ToListAsync();
+            return await _context.MovieScreenings
+                .Include(x => x.Movie)
+                .ThenInclude(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+                .ToListAsync();
         }
 
         public async Task<MovieScreening?> Update(int id, MovieScreening movieScreen)

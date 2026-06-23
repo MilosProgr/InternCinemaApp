@@ -1,6 +1,7 @@
 ﻿
 using CinemaApp.Application.Common.HATEOAS;
 using CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO;
+using CinemaApp.Application.DTO.ScreeningSeatDTO;
 using CinemaApp.Application.DTO.UsersDTO;
 using System.ComponentModel.DataAnnotations;
 
@@ -27,7 +28,7 @@ namespace CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO
         public bool IsCancelled { get; set; }
 
         // Sedišta koja su rezervisana
-        public List<ReservationSeatDTO> Seats { get; set; } = new();
+        public List<ScreeningSeatResponseDTO> Seats { get; set; } = new();
 
         public List<Link> Links { get; set; } = new();
     }

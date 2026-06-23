@@ -1,7 +1,11 @@
 ﻿using CinemaApp.Application.Common.HATEOAS;
+using CinemaApp.Application.DTO.MoviesDTO.MovieScreeningsDTO;
 using CinemaApp.Application.DTO.ReservationsDTO.ReservationDTO;
+using CinemaApp.Application.DTO.ScreeningSeatDTO;
 using CinemaApp.Application.Services.Reservations;
 using CinemaApp.Domain.Entities;
+using CinemaApp.Models.DTO.MoviesDTO.MoviesDTO;
+using iText.Svg.Renderers.Path.Impl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -267,7 +271,7 @@ namespace CinemaApp.Controllers
                 TotalPrice = r.TotalPrice,
                 CreatedAt = r.CreatedAt,
                 IsCancelled = r.IsCancelled,
-                Seats = r.Seats.Select(s => new ReservationSeatDTO
+                Seats = r.Seats.Select(s => new ScreeningSeatResponseDTO
                 {
                     Id = s.Id,
                     Row = s.Row,
@@ -276,5 +280,46 @@ namespace CinemaApp.Controllers
                 Links = ReservationLinkBuilder.Build(r, baseUrl, User)
             };
         }
+
+        [HttpGet("my")]
+        [Authorize]
+        public async Task<IActionResult> GetMyReservations()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var reservations = await _reservationService.GetMyReservations(userId);
+
+            var result = reservations.Select(r => new ReservationDTOResponse
+            {
+                Id = r.Id,
+                MovieScreeningId = r.MovieScreeningId,
+                MovieScreening = new MovieScreeningDTOResponse
+                {
+                    Id = r.MovieScreening.Id,
+                    StartTime = r.MovieScreening.StartTime,
+                    TicketPrice = r.MovieScreening.TicketPrice,
+                    Movie = new MovieDTOResponse
+                    {
+                        Id = r.MovieScreening.Movie.Id,
+                        Name = r.MovieScreening.Movie.Name,
+                        PosterUrl = r.MovieScreening.Movie.PosterUrl
+                    }
+                },
+                ReservationCode = r.ReservationCode,
+                TotalPrice = r.TotalPrice,
+                CreatedAt = r.CreatedAt,
+                IsCancelled = r.IsCancelled,
+                Seats = r.Seats.Select(s => new ScreeningSeatResponseDTO
+                {
+                    Id = s.Id,
+                    Row = s.Row,
+                    Number = s.Number
+                }).ToList()
+            }).ToList();
+
+            return Ok(result);
+        }
+
+        
     }
 }

@@ -41,6 +41,22 @@ namespace CinemaApp.Controllers
             return Ok(response);
         }
 
+        // ScreeningSeatController.cs
+        [HttpPost("generate")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> GenerateSeats(int screeningId)
+        {
+            try
+            {
+                await _seatService.GenerateSeatsForScreeningAsync(screeningId);
+                return Ok(new { message = $"Generisano 42 sedišta za projekciju {screeningId}." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+        }
+
         // GET api/screenings/5/seats/available
         [HttpGet("available")]
         [AllowAnonymous]

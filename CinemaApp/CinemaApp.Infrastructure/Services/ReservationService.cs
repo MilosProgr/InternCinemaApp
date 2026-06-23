@@ -187,5 +187,16 @@ namespace CinemaApp.Services.Reservations
                 PageSize = pageSize
             };
         }
+
+        public async Task<List<Reservation>> GetMyReservations(int userId)
+        {
+            return await _context.Reservations
+              .Where(r => r.UserId == userId)
+              .Include(r => r.MovieScreening)
+                  .ThenInclude(ms => ms.Movie)
+              .Include(r => r.Seats)
+              .OrderByDescending(r => r.MovieScreening.StartTime)
+              .ToListAsync();
+        }
     }
 }

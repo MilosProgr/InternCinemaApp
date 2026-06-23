@@ -1,128 +1,154 @@
+<h2>DEBUG</h2>
+
+<p>Screenings: {{ screenings.length }}</p>
+
+<p>Grouped Movies: {{ groupedMovies.length }}</p>
+
+<pre>{{ screenings | json }}</pre>
+
 <div class="homepage">
 
+  <!-- ── HEADER ─────────────────────────────────── -->
+  <header class="cinema-header">
+    <h1>🎬 Cinema</h1>
+  </header>
 
-<h1>
-  Bioskop
-</h1>
+  <!-- ── FILTERI ────────────────────────────────── -->
+  <section class="filters">
 
+    <select [(ngModel)]="selectedGenreId" (change)="filterChanged()">
+      <option [ngValue]="null">Svi žanrovi</option>
+      <option *ngFor="let genre of genres" [ngValue]="genre.id">
+        {{ genre.name }}
+      </option>
+    </select>
 
-<div class="filters">
+    <input
+      type="date"
+      [(ngModel)]="selectedDate"
+      (change)="filterChanged()"
+    />
 
+    <select [(ngModel)]="sortBy" (change)="filterChanged()">
+      <option value="chronologically">Po vremenu</option>
+      <option value="alphabetically">Po nazivu</option>
+    </select>
 
-<select 
-[(ngModel)]="selectedGenreId"
-(change)="filterChanged()">
+  </section>
 
-<option [ngValue]="null">
-Svi žanrovi
-</option>
+  <!-- ── LOADING ────────────────────────────────── -->
+  <div *ngIf="isLoading" class="state-msg">
+    Učitavanje...
+  </div>
 
+  <!-- ── GREŠKA ─────────────────────────────────── -->
+  <div *ngIf="errorMessage && !isLoading" class="state-msg error">
+    {{ errorMessage }}
+  </div>
 
-<option
-*ngFor="let genre of genres"
-[ngValue]="genre.id">
+  <!-- ── PRAZNO ─────────────────────────────────── -->
+  <div *ngIf="!isLoading && !errorMessage && groupedMovies.length === 0"
+       class="state-msg">
+    Nema projekcija za narednih 7 dana.
+  </div>
 
-{{genre.name}}
+  <!-- ── REPERTOAR ──────────────────────────────── -->
+  <div *ngIf="!isLoading && groupedMovies.length > 0" class="repertoar">
 
-</option>
+    <!-- RED ZA SVAKI FILM -->
+    <div class="movie-row" *ngFor="let item of groupedMovies">
 
-</select>
+      <!-- POSTER -->
+      <div class="movie-poster">
+        <img
+          *ngIf="item.movie.posterUrl"
+          [src]="item.movie.posterUrl"
+          [alt]="item.movie.name"
+        />
+        <div *ngIf="!item.movie.posterUrl" class="no-poster">
+          🎬
+        </div>
+      </div>
 
+      <!-- INFO O FILMU -->
+      <div class="movie-info">
 
+        <h2>{{ item.movie.name }}</h2>
+        <p class="original-name">{{ item.movie.originalName }}</p>
+        <p class="duration">⏱ {{ item.movie.duration }} min</p>
 
-<input 
-type="date"
-[(ngModel)]="selectedDate"
-(change)="filterChanged()"
->
+        <!-- ŽANROVI — ovde je bio [object Object] -->
+        <div class="genres" *ngIf="item.movie.genres?.length">
+          <span
+            class="genre-tag"
+            *ngFor="let g of item.movie.genres">
+            {{ g.name }}
+          </span>
+        </div>
 
+        <!-- OCENA -->
+        <div class="rating" *ngIf="item.movie.averageRating">
+          <span class="stars">{{ getStars(item.movie.averageRating) }}</span>
+          <span class="rating-num">
+            {{ item.movie.averageRating | number:'1.1-1' }} / 5
+          </span>
+        </div>
 
+      </div>
 
-<select
-[(ngModel)]="sortBy"
-(change)="filterChanged()">
+      <!-- TERMINI PO DANIMA (7 kolona) -->
+      <div class="schedule">
 
+        <div
+          class="day-col"
+          *ngFor="let day of next7Days">
 
-<option value="chronologically">
-Po vremenu
-</option>
+          <!-- DATUM U HEADERU KOLONE -->
+          <div class="day-header">
+            {{ day | date:'EEE' }}<br/>
+            {{ day | date:'dd.MM' }}
+          </div>
 
+          <!-- TERMINI ZA TAJ DAN -->
+          <div class="day-screenings">
 
-<option value="alphabetically">
-Po nazivu
-</option>
+            <ng-container
+              *ngFor="let s of getScreeningsForDay(item.screenings, day)">
 
+              <button
+                class="screening-btn"
+                [class.past]="isPast(s)"
+                [disabled]="isPast(s)"
+                [routerLink]="['/reservation', s.id]">
+                {{ s.startTime | date:'HH:mm' }}
+                <span class="price">{{ s.ticketPrice }} RSD</span>
+              </button>
 
-</select>
+            </ng-container>
 
+            <!-- Ako nema termina tog dana — prazno ćelija -->
+            <span
+              *ngIf="getScreeningsForDay(item.screenings, day).length === 0"
+              class="no-screening">
+              —
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!-- kraj movie-row -->
+
+  </div>
+  <!-- kraj repertoar -->
+
+  <!-- ── FOOTER ─────────────────────────────────── -->
+  <footer class="cinema-footer">
+    <p>© {{ 2025 }} Cinema App. Sva prava zadržana.</p>
+  </footer>
 
 </div>
-
-
-
-
-
-<div
-class="movie-card"
-*ngFor="let item of groupedMovies">
-
-
-<h2>
-{{item.movie?.name ?? ''}}
-</h2>
-
-
-<p>
-{{item.movie?.originalName ?? ''}}
-</p>
-
-
-
-<div class="days">
-
-
-<div
-*ngFor="let day of next7Days">
-
-
-<h4>
-{{day | date:'EEE dd.MM'}}
-</h4>
-
-
-
-<button
-
-*ngFor="
-let screening of 
-getScreeningsForDay(item.screenings,day)
-"
-
-[disabled]="isPast(screening)"
-
-[routerLink]="
-['/reservation',screening.id]
-">
-
-
-{{screening.startTime | date:'HH:mm'}}
-
--
-{{screening.ticketPrice}} RSD
-
-
-</button>
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
+<button (click)="MyReservations()">Prikaži filmove</button>

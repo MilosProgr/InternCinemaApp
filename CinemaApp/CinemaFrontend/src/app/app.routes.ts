@@ -23,6 +23,9 @@ export const routes: Routes = [
     { path: "Movie", component: MovieComponent, data: { allowedRoles: ['ADMIN'] }, canActivate: [guardGuard] },
     { path: "MovieScreening", component: MovieScreeningComponent, data: { allowedRoles: ['ADMIN'] }, canActivate: [guardGuard] },
     { path: "MovieGenres", component: MovieGenreComponent, data: { allowedRoles: ['ADMIN'] }, canActivate: [guardGuard] },
+    
     { path: "Reservation", component: ReservationComponent, data: { allowedRoles: ['ADMIN'] }, canActivate: [guardGuard] },
+    { path: "MyReservation", component: MyReservationsComponent, data: { allowedRoles: ['ADMIN'] }, canActivate: [guardGuard] },
+
     { path: "Rating", component: RatingComponent, data: { allowedRoles: ['ADMIN'] }, canActivate: [guardGuard] }
 ];

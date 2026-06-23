@@ -1,3 +1,4 @@
+import { MovieScreening } from "./movie_screening.model";
 import { ScreeningSeat } from "./screeningSeat";
 
 
@@ -8,6 +9,7 @@ export interface Reservation  {
     userId?: number;
     guestEmail?: string;
     movieScreeningId: number;
+    movieScreening: MovieScreening;  
     reservationCode: string;
     totalPrice: number;
     createdAt: string;

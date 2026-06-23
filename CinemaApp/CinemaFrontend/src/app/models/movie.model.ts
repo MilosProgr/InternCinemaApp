@@ -1,4 +1,5 @@
 import { Genre } from "./genre.model";
+import { Link } from "./hateoas.model";
 // import { HateoasResponse } from "./hateoas.model";
 
 export interface Movie {
@@ -16,4 +17,7 @@ export interface Movie {
     genres?: Genre[];  
 
     averageRating?:number;
+
+    links?: Link[];
+
 }

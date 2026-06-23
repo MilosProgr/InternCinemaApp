@@ -20,5 +20,9 @@ namespace CinemaApp.Application.Services.Reservations
 
         Task<Reservation> Cancel(int id, int? userId, bool isAdmin);
 
+
+        Task<List<Reservation>> GetMyReservations(int userId);
+
+
     }
 }

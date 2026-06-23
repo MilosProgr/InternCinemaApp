@@ -1,4 +1,5 @@
 // import {HateoasResponse} from './hateoas.model';
+import { Link } from './hateoas.model';
 import {Movie} from './movie.model';
 
 
@@ -13,5 +14,8 @@ export interface MovieScreening  {
     startTime:string;
 
     ticketPrice:number;
+
+    links?: Link[];
+
 
 }
