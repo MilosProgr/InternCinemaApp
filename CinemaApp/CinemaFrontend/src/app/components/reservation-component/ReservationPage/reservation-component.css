@@ -1,0 +1,245 @@
+.reservation-page {
+  max-width: 680px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.reservation-page h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: var(--cinema-text);
+}
+
+.screening-details {
+  background: var(--cinema-card);
+  border: 0.5px solid var(--cinema-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.screening-details h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cinema-muted);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+}
+
+.screening-details p {
+  font-size: 13px;
+  color: var(--cinema-text);
+  margin-bottom: 5px;
+}
+
+.screening-details strong {
+  color: var(--cinema-text);
+}
+
+.discount-info {
+  color: var(--cinema-green) !important;
+  font-size: 12px !important;
+}
+
+.guest-email {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.guest-email label {
+  font-size: 12px;
+  color: var(--cinema-muted);
+}
+
+.guest-email input {
+  background: var(--cinema-surface);
+  border: 0.5px solid var(--cinema-border);
+  color: var(--cinema-text);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.guest-email input:focus {
+  outline: none;
+  border-color: var(--cinema-primary);
+}
+
+.screen-label {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 6px;
+  font-size: 11px;
+  color: var(--cinema-muted);
+  letter-spacing: 3px;
+  margin-bottom: 1rem;
+}
+
+.legend {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 12px;
+  color: var(--cinema-muted);
+}
+
+.legend .box {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.box.available { background: var(--cinema-green); }
+.box.selected  { background: var(--cinema-orange); }
+.box.occupied  { background: rgba(231, 76, 60, 0.5); }
+
+.seat-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.row-label {
+  width: 18px;
+  font-size: 12px;
+  color: var(--cinema-muted);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.seat-row button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.15s;
+}
+
+.seat-row button:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+.seat-row button.available {
+  background: var(--cinema-green);
+  color: white;
+}
+
+.seat-row button.selected {
+  background: var(--cinema-orange);
+  color: white;
+}
+
+.seat-row button.occupied {
+  background: rgba(231, 76, 60, 0.4);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.price-section {
+  background: var(--cinema-card);
+  border: 0.5px solid var(--cinema-border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 13px;
+}
+
+.price-section p { margin-bottom: 4px; color: var(--cinema-muted); }
+.price-section strong { color: var(--cinema-primary); font-size: 16px; }
+
+.reserve-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--cinema-primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.reserve-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.reserve-btn:hover:not(:disabled) { opacity: 0.85; }
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.dialog {
+  background: var(--cinema-card);
+  border: 0.5px solid var(--cinema-border);
+  border-radius: 14px;
+  padding: 2rem;
+  min-width: 300px;
+  text-align: center;
+}
+
+.dialog h3 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.dialog p {
+  font-size: 13px;
+  color: var(--cinema-muted);
+  margin-bottom: 4px;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.dialog-actions .confirm-btn {
+  background: var(--cinema-green);
+  color: white;
+  border: none;
+  padding: 9px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dialog-actions .cancel-btn {
+  background: transparent;
+  color: var(--cinema-red-seat);
+  border: 0.5px solid rgba(231, 76, 60, 0.5);
+  padding: 9px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}

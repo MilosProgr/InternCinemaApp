@@ -1,0 +1,27 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --cinema-primary: #e50914;
+  --cinema-dark: #141414;
+  --cinema-surface: #1c1c1c;
+  --cinema-card: #242424;
+  --cinema-border: rgba(255, 255, 255, 0.1);
+  --cinema-text: #e5e5e5;
+  --cinema-muted: #999;
+  --cinema-gold: #f5c518;
+  --cinema-green: #2ecc71;
+  --cinema-orange: #f0a500;
+  --cinema-red-seat: #e74c3c;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--cinema-dark);
+  color: var(--cinema-text);
+  font-family: sans-serif;
+  min-height: 100vh;
+}

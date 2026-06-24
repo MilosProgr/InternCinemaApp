@@ -1,0 +1,62 @@
+<p>my-reservations-component works!</p>
+
+
+<div class="reservations-container">
+
+  <!-- Tab dugmici -->
+  <div class="tabs">
+    <button 
+      [class.active]="activeTab === 'current'" 
+      (click)="setTab('current')">
+      Current reservations
+    </button>
+    <button 
+      [class.active]="activeTab === 'past'" 
+      (click)="setTab('past')">
+      Past reservations
+    </button>
+  </div>
+
+  <!-- Current -->
+  <div *ngIf="activeTab === 'current'">
+    <div class="reservation-card" *ngFor="let r of currentReservations">
+      <img [src]="r.movieScreening.movie?.posterUrl" />
+      <div class="details">
+        <h3>{{ r.movieScreening.movie?.name }}</h3>
+        <p>{{ r.movieScreening.startTime | date:'dd.MM.yyyy HH:mm' }}</p>
+        <p>Seats: {{ r.seats  }}</p>
+        <p>Total: {{ r.totalPrice }} RSD</p>
+        <p>Tickets: {{ r.seats.length + 1 }}</p>
+      </div>
+      <button class="cancel-btn" (click)="cancel(r)">
+        Cancel reservation
+      </button>
+    </div>
+
+    <p *ngIf="currentReservations.length === 0">No current reservations.</p>
+  </div>
+
+  <!-- Past -->
+  <div *ngIf="activeTab === 'past'">
+    <div class="reservation-card" *ngFor="let r of pastReservations">
+      <img [src]="r.movieScreening.movie?.posterUrl" />
+      <div class="details">
+        <h3>{{ r.movieScreening.movie?.name }}</h3>
+        <p>{{ r.movieScreening.startTime | date:'dd.MM.yyyy HH:mm' }}</p>
+        <p>Seats: {{ r.seats }}</p>
+        <p>Total: {{ r.totalPrice }} RSD</p>
+        <p *ngIf="r.isCancelled" class="cancelled">Cancelled</p>
+      </div>
+      <!-- Rating samo za prošle, samo ako nije otkazano -->
+      <div class="rating" *ngIf="!r.isCancelled">
+        <span>Rate:</span>
+        <button *ngFor="let star of [1,2,3,4,5]" (click)="rate(r, star)">
+          ★
+        </button>
+      </div>
+    </div>
+
+    <p *ngIf="pastReservations.length === 0">No past reservations.</p>
+  </div>
+
+</div>

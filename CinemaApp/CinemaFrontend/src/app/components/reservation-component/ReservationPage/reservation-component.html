@@ -1,0 +1,78 @@
+<p>reservation-component works!</p>
+<div class="reservation-page">
+
+  <!-- Header -->
+  <h2>Ticket reservation</h2>
+
+  <!-- Screening details (leva strana iz PDF-a) -->
+  <div class="screening-details">
+    <h3>Screening details</h3>
+    <p><strong>Movie:</strong> {{ screening?.movie?.name }}</p>
+    <p><strong>Date:</strong> {{ screening?.startTime | date:'dd.MM.yyyy' }}</p>
+    <p><strong>Time:</strong> {{ screening?.startTime | date:'HH:mm' }}</p>
+    <p><strong>No. of tickets:</strong> {{ selectedSeats.length }} / {{ MAX_TICKETS }}</p>
+    <p><strong>Ticket price:</strong> {{ screening?.ticketPrice }} RSD</p>
+    <p *ngIf="isAuthenticated" class="discount-info">
+      5% discount applied
+    </p>
+    <p><strong>Total price: {{ totalPrice | number:'1.0-0' }} RSD</strong></p>
+  </div>
+
+  <!-- Email samo za neautentifikovane -->
+  <div class="guest-email" *ngIf="!isAuthenticated">
+    <label>E-mail address:</label>
+    <input
+      [(ngModel)]="guestEmail"
+      type="email"
+      placeholder="your@email.com"
+    />
+  </div>
+
+  <!-- Projekcioni ekran -->
+  <div class="screen-label">Projection screen</div>
+
+  <!-- Legenda -->
+  <div class="legend">
+    <span class="box selected"></span> Selected seats
+    <span class="box occupied"></span> Occupied seats
+    <span class="box available"></span> Available seats
+  </div>
+
+  <!-- Mreža sedišta -->
+  <div class="seat-grid">
+    <div class="seat-row" *ngFor="let row of rows">
+      <span class="row-label">{{ row }}</span>
+      <button
+        *ngFor="let seat of getSeatsForRow(row)"
+        [ngClass]="getSeatClass(seat)"
+        [disabled]="seat.isOccupied"
+        (click)="toggleSeat(seat)">
+        {{ seat.number }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Make Reservation dugme -->
+  <button
+    class="reserve-btn"
+    (click)="confirm()"
+    [disabled]="selectedSeats.length === 0 || (!isAuthenticated && !guestEmail)">
+    Make reservation
+  </button>
+
+  <!-- Confirmation dialog -->
+  <div class="dialog-overlay" *ngIf="showConfirmDialog">
+    <div class="dialog">
+      <h3>Confirm reservation</h3>
+      <p>Movie: <strong>{{ screening?.movie?.name }}</strong></p>
+      <p>Date: <strong>{{ screening?.startTime | date:'dd.MM.yyyy HH:mm' }}</strong></p>
+      <p>Seats: <strong>{{ selectedSeats.length }}</strong></p>
+      <p>Total: <strong>{{ totalPrice | number:'1.0-0' }} RSD</strong></p>
+      <div class="dialog-actions">
+        <button class="confirm-btn" (click)="makeReservation()">Confirm</button>
+        <button class="cancel-btn" (click)="cancelConfirmation()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div>

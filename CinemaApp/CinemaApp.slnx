@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CinemaApp.Application/CinemaApp.Application.csproj" />
+  <Project Path="CinemaApp.Domain/CinemaApp.Domain.csproj" />
+  <Project Path="CinemaApp.Infrastructure/CinemaApp.Infrastructure.csproj" />
+  <Project Path="CinemaApp/CinemaApp.csproj" />
+</Solution>

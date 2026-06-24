@@ -1,0 +1,78 @@
+.navbar {
+  background: rgba(20, 20, 20, 0.95);
+  border-bottom: 0.5px solid var(--cinema-border);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-logo {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--cinema-primary);
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  font-size: 13px;
+  color: var(--cinema-muted);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--cinema-text);
+}
+
+.nav-btn {
+  background: var(--cinema-primary);
+  color: white;
+  border: none;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.nav-btn:hover { opacity: 0.85; }
+
+/* ... (kopiraj navbar.css od ranije) ... */
+
+.nav-user {
+  font-size: 13px;
+  color: var(--cinema-muted);
+}
+
+.nav-btn.logout {
+  background: transparent;
+  border: 0.5px solid rgba(231, 76, 60, 0.4);
+  color: #e74c3c;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nav-btn.logout:hover {
+  background: rgba(231, 76, 60, 0.1);
+}

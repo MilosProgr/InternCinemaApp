@@ -1,0 +1,150 @@
+<div class="homepage">
+
+  <!-- ── HEADER ─────────────────────────────────── -->
+  <header class="cinema-header">
+    <h1>🎬 Cinema</h1>
+  </header>
+
+  <!-- ── FILTERI ────────────────────────────────── -->
+  <section class="filters">
+
+    <select [(ngModel)]="selectedGenreId" (change)="filterChanged()">
+      <option [ngValue]="null">Svi žanrovi</option>
+      <option *ngFor="let genre of genres" [ngValue]="genre.id">
+        {{ genre.name }}
+      </option>
+    </select>
+
+    <input
+      type="date"
+      [(ngModel)]="selectedDate"
+      [min]="next7Days[0] | date:'yyyy-MM-dd'"
+      [max]="next7Days[6] | date:'yyyy-MM-dd'"
+      (change)="filterChanged()"
+    />
+
+    <select [(ngModel)]="sortBy" (change)="filterChanged()">
+      <option value="chronologically">Po vremenu</option>
+      <option value="alphabetically">Po nazivu</option>
+    </select>
+
+  </section>
+
+  <!-- ── LOADING ────────────────────────────────── -->
+  <div *ngIf="isLoading" class="state-msg">
+    Učitavanje...
+  </div>
+
+  <!-- ── GREŠKA ─────────────────────────────────── -->
+  <div *ngIf="errorMessage && !isLoading" class="state-msg error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- ── PRAZNO ─────────────────────────────────── -->
+  <div *ngIf="!isLoading && !errorMessage && groupedMovies.length === 0"
+       class="state-msg">
+    Nema projekcija za narednih 7 dana.
+  </div>
+
+  <!-- ── REPERTOAR ──────────────────────────────── -->
+  <div *ngIf="!isLoading && groupedMovies.length > 0" class="repertoar">
+
+    <!-- RED ZA SVAKI FILM -->
+    <div class="movie-row" *ngFor="let item of groupedMovies">
+
+      <!-- POSTER -->
+      <div class="movie-poster">
+        <img
+          *ngIf="item.movie.posterUrl"
+          [src]="item.movie.posterUrl"
+          [alt]="item.movie.name"
+        />
+        <div *ngIf="!item.movie.posterUrl" class="no-poster">
+          🎬
+        </div>
+      </div>
+
+      <!-- INFO O FILMU -->
+      <div class="movie-info">
+
+        <h2>{{ item.movie.name }}</h2>
+        <p class="original-name">{{ item.movie.originalName }}</p>
+        <p class="duration">⏱ {{ item.movie.duration }} min</p>
+
+        <!-- ŽANROVI — ovde je bio [object Object] -->
+        <div class="genres" *ngIf="item.movie.genres?.length">
+          <span
+            class="genre-tag"
+            *ngFor="let g of item.movie.genres">
+            {{ g.name }}
+          </span>
+        </div>
+
+        <!-- OCENA -->
+        <div class="rating" *ngIf="item.movie.averageRating">
+          <span class="stars">{{ getStars(item.movie.averageRating) }}</span>
+          <span class="rating-num">
+            {{ item.movie.averageRating | number:'1.1-1' }} / 5
+          </span>
+        </div>
+
+      </div>
+
+      <!-- TERMINI PO DANIMA (7 kolona) -->
+      <div class="schedule">
+
+        <div
+          class="day-col"
+          *ngFor="let day of next7Days">
+
+          <!-- DATUM U HEADERU KOLONE -->
+          <div class="day-header">
+            {{ day | date:'EEE' }}<br/>
+            {{ day | date:'dd.MM' }}
+          </div>
+
+          <!-- TERMINI ZA TAJ DAN -->
+          <div class="day-screenings">
+
+            <ng-container
+              *ngFor="let s of getScreeningsForDay(item.screenings, day)">
+
+              <button
+                class="screening-btn"
+                [class.past]="isPast(s)"
+                [disabled]="isPast(s)"
+                [routerLink]="['/reservation', s.id]">
+                {{ s.startTime | date:'HH:mm' }}
+                <span class="price">{{ s.ticketPrice }} RSD</span>
+              </button>
+
+            </ng-container>
+
+            <!-- Ako nema termina tog dana — prazno ćelija -->
+            <span
+              *ngIf="getScreeningsForDay(item.screenings, day).length === 0"
+              class="no-screening">
+              —
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!-- kraj movie-row -->
+
+  </div>
+  <!-- kraj repertoar -->
+
+  <!-- ── FOOTER ─────────────────────────────────── -->
+  <footer class="cinema-footer">
+    <p>© {{ 2025 }} Cinema App. Sva prava zadržana.</p>
+  </footer>
+
+</div>
+<button (click)="MyReservations()">Prikaži Moje Rezervacije</button>
+<button (click)="Reservations()">Prikaži Rezervacije</button>
+

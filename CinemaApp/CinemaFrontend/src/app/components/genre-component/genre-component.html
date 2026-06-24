@@ -1,0 +1,23 @@
+<p>genre-component works!</p>
+
+
+
+<!-- genre.component.html -->
+<app-generic-table
+  [data]="entities"
+  [columns]="columns"
+  [showActions]="true"
+  [currentPage]="currentPage"
+  [totalPages]="totalPages"
+  [links]="links"
+  (edit)="edit($event)"
+  (delete)="delete($event)"
+  (pageChange)="goToPage($event)">
+</app-generic-table>
+
+<button (click)="movie()">Prikaži filmove</button>
+<button (click)="movieScreening()">Prikaži Repertorar</button>
+<button (click)="reservation()">Prikaži rezervacije</button>
+<button (click)="reservationSeat()">Mesta rezervacije</button>
+<button (click)="seat()">Prikaži Sedista</button>
+<button (click)="rating()">Ocena</button>

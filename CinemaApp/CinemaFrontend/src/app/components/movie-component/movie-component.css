@@ -1,0 +1,124 @@
+.admin-page {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.admin-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.add-btn {
+  background: var(--cinema-primary);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+
+.add-btn:hover { opacity: 0.85; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: var(--cinema-card);
+  border: 0.5px solid var(--cinema-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+thead th {
+  text-align: left;
+  padding: 11px 14px;
+  color: var(--cinema-muted);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 0.5px solid var(--cinema-border);
+  background: var(--cinema-surface);
+}
+
+tbody td {
+  padding: 11px 14px;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
+  color: var(--cinema-text);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.edit-btn {
+  background: rgba(245, 197, 24, 0.1);
+  color: var(--cinema-gold);
+  border: 0.5px solid rgba(245, 197, 24, 0.3);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.edit-btn:hover { background: rgba(245, 197, 24, 0.2); }
+
+.del-btn {
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--cinema-red-seat);
+  border: 0.5px solid rgba(231, 76, 60, 0.3);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: 6px;
+  transition: background 0.15s;
+}
+
+.del-btn:hover { background: rgba(231, 76, 60, 0.2); }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1.25rem;
+}
+
+.page-btn {
+  background: var(--cinema-surface);
+  border: 0.5px solid var(--cinema-border);
+  color: var(--cinema-text);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.page-btn:hover  { background: var(--cinema-card); }
+.page-btn.active { background: var(--cinema-primary); border-color: var(--cinema-primary); }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.page-info {
+  font-size: 12px;
+  color: var(--cinema-muted);
+  padding: 0 8px;
+}
