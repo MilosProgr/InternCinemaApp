@@ -19,9 +19,8 @@
 
     <div class="example-label">
         <div class="example-button-row">
-            <button mat-flat-button color="primary" (click)="login()" type="submit" mat-raised-button
-                color="primary">Login</button>
-            <button mat-flat-button color="primary" *ngIf="loginService.user"
+            <button mat-flat-button color="elevated"(click)="login()" type="submit">Login</button>
+            <button mat-stroked-button color="elevated" *ngIf="loginService.user"
                 (click)="loginService.logout()">Logout</button>
         </div>
     </div>

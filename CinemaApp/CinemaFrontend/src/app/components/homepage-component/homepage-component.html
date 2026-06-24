@@ -1,11 +1,3 @@
-<h2>DEBUG</h2>
-
-<p>Screenings: {{ screenings.length }}</p>
-
-<p>Grouped Movies: {{ groupedMovies.length }}</p>
-
-<pre>{{ screenings | json }}</pre>
-
 <div class="homepage">
 
   <!-- ── HEADER ─────────────────────────────────── -->
@@ -26,6 +18,8 @@
     <input
       type="date"
       [(ngModel)]="selectedDate"
+      [min]="next7Days[0] | date:'yyyy-MM-dd'"
+      [max]="next7Days[6] | date:'yyyy-MM-dd'"
       (change)="filterChanged()"
     />
 
@@ -151,4 +145,6 @@
   </footer>
 
 </div>
-<button (click)="MyReservations()">Prikaži filmove</button>
+<button (click)="MyReservations()">Prikaži Moje Rezervacije</button>
+<button (click)="Reservations()">Prikaži Rezervacije</button>
+

@@ -1,0 +1,47 @@
+.outcome-page {
+  max-width: 500px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  text-align: center;
+  border-radius: 14px;
+}
+
+.outcome-page.success {
+  background: rgba(46, 204, 113, 0.08);
+  border: 0.5px solid rgba(46, 204, 113, 0.25);
+}
+
+.outcome-page.failure {
+  background: rgba(231, 76, 60, 0.08);
+  border: 0.5px solid rgba(231, 76, 60, 0.25);
+}
+
+.outcome-icon {
+  font-size: 48px;
+  margin-bottom: 1rem;
+}
+
+.outcome-page h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.outcome-page p {
+  font-size: 14px;
+  color: var(--cinema-muted);
+  line-height: 1.6;
+}
+
+.outcome-page .back-btn {
+  display: inline-block;
+  margin-top: 1.5rem;
+  background: var(--cinema-primary);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+}

@@ -141,9 +141,9 @@ namespace CinemaApp.Services.MovieScreenings
             var query = _context.MovieScreenings
                 .Include(x => x.Movie)
                     .ThenInclude(m => m.MovieGenres)
-                        .ThenInclude(mg => mg.Genre)  // ← OVO NEDOSTAJE
+                        .ThenInclude(mg => mg.Genre)  
                 .Include(x => x.Movie)
-                    .ThenInclude(m => m.Ratings)      // ← za AverageRating
+                    .ThenInclude(m => m.Ratings)      
                 .AsQueryable();
 
 
@@ -175,13 +175,16 @@ namespace CinemaApp.Services.MovieScreenings
             // filter po datumu
             if (date.HasValue)
             {
-                var utcDate = DateTime.SpecifyKind(
-                    date.Value,
+                var start = DateTime.SpecifyKind(
+                    date.Value.Date,
                     DateTimeKind.Utc
                 );
 
+                var end = start.AddDays(1);
+
                 query = query.Where(x =>
-                    x.StartTime.Date == utcDate.Date
+                    x.StartTime >= start &&
+                    x.StartTime < end
                 );
             }
 
@@ -202,11 +205,7 @@ namespace CinemaApp.Services.MovieScreenings
 
 
 
-            return await _context.MovieScreenings
-                .Include(x => x.Movie)
-                .ThenInclude(m => m.MovieGenres)
-                .ThenInclude(mg => mg.Genre)
-                .ToListAsync();
+            return await query.ToListAsync();
         }
 
         public async Task<MovieScreening?> Update(int id, MovieScreening movieScreen)

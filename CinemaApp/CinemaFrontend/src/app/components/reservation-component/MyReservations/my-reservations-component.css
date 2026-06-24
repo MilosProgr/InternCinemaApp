@@ -1,0 +1,129 @@
+.reservations-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 0.5px solid var(--cinema-border);
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--cinema-muted);
+  padding: 10px 22px;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -0.5px;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: var(--cinema-text);
+  border-bottom-color: var(--cinema-primary);
+}
+
+.reservation-card {
+  background: var(--cinema-card);
+  border: 0.5px solid var(--cinema-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+
+.reservation-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.reservation-card img {
+  width: 50px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: var(--cinema-surface);
+}
+
+.details { flex: 1; }
+
+.details h3 {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.details p {
+  font-size: 12px;
+  color: var(--cinema-muted);
+  margin-bottom: 3px;
+}
+
+.details .price {
+  font-size: 13px;
+  color: var(--cinema-primary);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.cancelled {
+  display: inline-block;
+  background: rgba(231, 76, 60, 0.12);
+  color: var(--cinema-red-seat);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 0.5px solid rgba(231, 76, 60, 0.3);
+  margin-top: 4px;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 0.5px solid rgba(231, 76, 60, 0.4);
+  color: var(--cinema-red-seat);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.cancel-btn:hover {
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.rating span {
+  font-size: 12px;
+  color: var(--cinema-muted);
+  margin-right: 4px;
+}
+
+.rating button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--cinema-muted);
+  cursor: pointer;
+  padding: 0 1px;
+  transition: color 0.1s;
+  line-height: 1;
+}
+
+.rating button.active { color: var(--cinema-gold); }
+.rating button:hover  { color: var(--cinema-gold); }

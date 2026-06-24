@@ -26,7 +26,7 @@
         <p>{{ r.movieScreening.startTime | date:'dd.MM.yyyy HH:mm' }}</p>
         <p>Seats: {{ r.seats  }}</p>
         <p>Total: {{ r.totalPrice }} RSD</p>
-        <p>Tickets: {{ r.seats.length }}</p>
+        <p>Tickets: {{ r.seats.length + 1 }}</p>
       </div>
       <button class="cancel-btn" (click)="cancel(r)">
         Cancel reservation

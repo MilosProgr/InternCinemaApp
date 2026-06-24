@@ -1,0 +1,49 @@
+<nav class="navbar">
+
+  <a class="nav-logo" routerLink="/">
+    🎬 Cinema
+  </a>
+
+  <div class="nav-links">
+
+    <a class="nav-link"
+       routerLink="/"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{exact: true}">
+      Repertoar
+    </a>
+
+    <ng-container *ngIf="isLoggedIn">
+      <a class="nav-link"
+         routerLink="/MyReservation"
+         routerLinkActive="active">
+        Moje rezervacije
+      </a>
+    </ng-container>
+
+    <ng-container *ngIf="isAdmin">
+      <a class="nav-link"
+         routerLink="/admin/genres"
+         routerLinkActive="active">
+        Admin
+      </a>
+    </ng-container>
+
+    <!-- Nije ulogovan -->
+    <ng-container *ngIf="!isLoggedIn">
+      <a class="nav-link" routerLink="/login">Login</a>
+      <a class="nav-btn" routerLink="/register">Register</a>
+    </ng-container>
+
+    <!-- Ulogovan -->
+    <ng-container *ngIf="isLoggedIn">
+      <span class="nav-user" *ngIf="username">
+        {{ username }}
+      </span>
+      <button class="nav-btn logout" (click)="logout()">
+        Logout
+      </button>
+    </ng-container>
+
+  </div>
+</nav>

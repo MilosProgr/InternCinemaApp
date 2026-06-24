@@ -124,11 +124,10 @@ export class ReservationComponent
       : this.basePrice;
   }
 
+  // Dodaj u confirm() proveru za email
   confirm(): void {
-    if (this.selectedSeats.length === 0) {
-      return;
-    }
-
+    if (this.selectedSeats.length === 0) return;
+    if (!this.isAuthenticated && !this.guestEmail) return;
     this.showConfirmDialog = true;
   }
 

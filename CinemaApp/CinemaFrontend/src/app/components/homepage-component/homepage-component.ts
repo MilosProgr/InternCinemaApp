@@ -50,6 +50,13 @@ export class HomepageComponent implements OnInit {
             return d;
         });
 
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth()+1).padStart(2,'0');
+        const day = String(today.getDate()).padStart(2,'0');
+
+        this.selectedDate = `${year}-${month}-${day}`;
+
         this.loadGenres();
         this.loadScreenings();
     }
@@ -130,9 +137,12 @@ export class HomepageComponent implements OnInit {
     const map = new Map<number, GroupedMovie>();
 
     screenings.forEach(s => {
-
+    
         console.log('screening');
         console.log(s);
+
+        console.log('screening');
+        console.log(s.movie);
 
         if (!s.movie) {
 
@@ -181,5 +191,9 @@ export class HomepageComponent implements OnInit {
 
     MyReservations() {
         this.router.navigate(['/MyReservation']);
+    }
+
+    Reservations() {
+        this.router.navigate(['/Reservation']);
     }
 }

@@ -17,6 +17,7 @@ export class MyReservationsComponent implements OnInit {
   pastReservations: Reservation[] = [];
   activeTab: 'current' | 'past' = 'current';
 
+
   constructor(
     private reservationService: ReservationService,
     private ratingService: RatingService
